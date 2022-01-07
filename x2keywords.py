@@ -9,6 +9,8 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import DBSCAN
 from nltk.tokenize import word_tokenize
 from tqdm import tqdm
+import networkx as nx
+import operator
 
 N_GRAM = 4
 
@@ -65,38 +67,73 @@ def make_dtm():
     for i in range(df_journal.shape[0]):
         whole_document += str(df_journal.iloc[i, 11]) + ' '
 
-    list_keywords = get_list_top_keywords(whole_document, 10)
+    list_keyword = get_list_top_keywords(whole_document, 10)[:200] # Renewable Energy -> 1103
+    print(list_keyword)
     list_document_refined = []
 
-    for i in tqdm(range(df_journal.shape[0])):
+    for i in tqdm(range(df_journal.shape[0]), desc = "텍스트 전처리 과정 진행 중"):
         document = str(df_journal.iloc[i, 11])
         list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(document)))
         list_document_refined.append("")
         for j in range(1, N_GRAM + 1):
             for k in range(len(list_tokenized_words) - j):
                 combined_words = ' '.join(list_tokenized_words[k:k+j])
-                if combined_words in [t[0] for t in list_keywords]:
+                if combined_words in [t[0] for t in list_keyword]:
                     list_document_refined[-1] += combined_words + ' '
 
-    df_journal["_AB2"] = list_document_refined
-    tfidf_vectorizer = TfidfVectorizer(min_df = 2, ngram_range=(1,5))
-    tfidf_vectorizer.fit(list_document_refined)
-    print(sorted(tfidf_vectorizer.vocabulary_.items()))
-    vector = tfidf_vectorizer.transform(list_document_refined).toarray()
-    vector = numpy.array(vector) 
-    model = DBSCAN(eps=0.7, min_samples=4, metric = "cosine") # eps가 클수록 min_samples가 작을수록 노이즈 데이터 작아짐
-    result = model.fit_predict(vector)
-    df_journal["_CN"] = result 
-    for cluster_num in set(result):
-        if(cluster_num == -1 or cluster_num == 0): 
-            continue
-        else:
-            print("cluster num : {}".format(cluster_num))
-            temp_df = df_journal[df_journal['_CN'] == cluster_num] 
-            for title in temp_df['TI']:
-                print(title) 
-            print()
+    #df_journal["_AB2"] = list_document_refined
+    dict_term_fair_frequency = { }
 
+    THRESHOLD_FREQUENCY = 80
+
+    for i in tqdm(range(len(list_keyword)), desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
+        for j in range(i + 1, len(list_keyword)):
+            for k in range(len(list_document_refined)):
+                if(list_document_refined[k].count(list_keyword[i][0]) > 0 and list_document_refined[k].count(list_keyword[j][0]) > 0):
+                    key = list_keyword[i][0] + "**" + list_keyword[j][0]
+                    if key in dict_term_fair_frequency:
+                        dict_term_fair_frequency[key] += 1
+                    else:
+                        dict_term_fair_frequency[key] = 1
+    
+    print(dict_term_fair_frequency)
+    G_centrality = nx.Graph()
+    for term_fair, frequency in dict_term_fair_frequency.items():
+        if frequency >= THRESHOLD_FREQUENCY:
+            list_term = term_fair.split('**')
+            G_centrality.add_edge(list_term[0], list_term[1], weight = frequency)
+    
+    dgr = nx.degree_centrality(G_centrality)        # 연결 중심성
+    pgr = nx.pagerank(G_centrality)                 # 페이지 랭크
+
+    sorted_dgr = sorted(dgr.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_pgr = sorted(pgr.items(), key=operator.itemgetter(1), reverse=True)
+
+    G = nx.Graph()
+
+    # 페이지 랭크에 따라 두 노드 사이의 연관성을 결정한다. (단어쌍의 연관성)
+    # 연결 중심성으로 계산한 척도에 따라 노드의 크기가 결정된다. (단어의 등장 빈도수)
+    for i in range(len(sorted_pgr)):
+        G.add_node(sorted_pgr[i][0], nodesize=sorted_dgr[i][1])
+
+    for term_fair, frequency in dict_term_fair_frequency.items():
+        if frequency >= THRESHOLD_FREQUENCY:
+            list_term = term_fair.split('**')
+            G.add_weighted_edges_from([(list_term[0], list_term[1], frequency * 2)])
+
+    sizes = [G.nodes[node]['nodesize'] * 1200 for node in G]
+
+    import matplotlib.pyplot as plt
+    options = {
+        'edge_color': '#0099FF',
+        'width': 1,
+        'with_labels': True,
+        'font_weight': 'regular',
+    }
+    nx.draw(G, node_size=sizes, pos=nx.spring_layout(G, k=3.5, iterations=100), **options)  # font_family로 폰트 등록
+    ax = plt.gca()
+    ax.collections[0].set_edgecolor("#0099FF")
+    plt.show()
 
 make_dtm()
 exit(1)

@@ -16,6 +16,6 @@ def regularize_abstract(_str):
 def apply_stopwords(_list_tokenized_words):
     temps = []
     for word in _list_tokenized_words:
-        if word not in words2stop:
+        if word not in words2stop and len(word) >= 4:
             temps.append(word)
     return temps

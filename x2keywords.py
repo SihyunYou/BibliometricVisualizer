@@ -4,15 +4,19 @@
 import journal_reader
 #import hierarchizer
 import regularizer
+import numpy
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.cluster import DBSCAN
 from nltk.tokenize import word_tokenize
+from tqdm import tqdm
 
-MAX_WORD_COUNT = 4
+N_GRAM = 4
 
 def make_bow(_document):
     list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(_document)))
     word_to_index, bow = {}, []
 
-    for j in range(1, MAX_WORD_COUNT + 1):
+    for j in range(1, N_GRAM + 1):
         for k in range(len(list_tokenized_words) - j):
             combined_words = ' '.join(list_tokenized_words[k:k+j])
             #hierarchizer.search_knowledge_hierarchy(combined_words)
@@ -54,6 +58,48 @@ def get_list_top_keywords(_document, _threshold):
 
     return list_word_count_sorted
 
+
+def make_dtm():
+    whole_document = ""
+    df_journal = journal_reader.df_journal.loc[journal_reader.df_journal["SO"] == "Renewable Energy"]
+    for i in range(df_journal.shape[0]):
+        whole_document += str(df_journal.iloc[i, 11]) + ' '
+
+    list_keywords = get_list_top_keywords(whole_document, 10)
+    list_document_refined = []
+
+    for i in tqdm(range(df_journal.shape[0])):
+        document = str(df_journal.iloc[i, 11])
+        list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(document)))
+        list_document_refined.append("")
+        for j in range(1, N_GRAM + 1):
+            for k in range(len(list_tokenized_words) - j):
+                combined_words = ' '.join(list_tokenized_words[k:k+j])
+                if combined_words in [t[0] for t in list_keywords]:
+                    list_document_refined[-1] += combined_words + ' '
+
+    df_journal["_AB2"] = list_document_refined
+    tfidf_vectorizer = TfidfVectorizer(min_df = 2, ngram_range=(1,5))
+    tfidf_vectorizer.fit(list_document_refined)
+    print(sorted(tfidf_vectorizer.vocabulary_.items()))
+    vector = tfidf_vectorizer.transform(list_document_refined).toarray()
+    vector = numpy.array(vector) 
+    model = DBSCAN(eps=0.7, min_samples=4, metric = "cosine") # eps가 클수록 min_samples가 작을수록 노이즈 데이터 작아짐
+    result = model.fit_predict(vector)
+    df_journal["_CN"] = result 
+    for cluster_num in set(result):
+        if(cluster_num == -1 or cluster_num == 0): 
+            continue
+        else:
+            print("cluster num : {}".format(cluster_num))
+            temp_df = df_journal[df_journal['_CN'] == cluster_num] 
+            for title in temp_df['TI']:
+                print(title) 
+            print()
+
+
+make_dtm()
+exit(1)
 def get_trend_of_keywords_from_year(_remark_year):
     document_py = ""
     df_journal_py = journal_reader.df_journal.loc[journal_reader.df_journal["PY"] == str(_remark_year)]

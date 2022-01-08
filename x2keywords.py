@@ -2,7 +2,8 @@
 # Trend of keywords from x(= years or journals)
 
 import journal_reader
-#import hierarchizer
+import hierarchizer
+from hierarchizer import N_GRAM
 import regularizer
 import numpy
 from sklearn.feature_extraction.text import TfidfVectorizer
@@ -12,14 +13,24 @@ from tqdm import tqdm
 import networkx as nx
 import operator
 
-N_GRAM = 4
 
 def make_bow(_document):
-    list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(_document)))
+    list_tokenized_words = regularizer.preprocess_text(_document)
     word_to_index, bow = {}, []
 
     for j in range(1, N_GRAM + 1):
         for k in range(len(list_tokenized_words) - j):
+            continuable = False
+            for l in range(k, k + j): # 동어 반복 제거
+                for m in range(l + 1, k + j):
+                    if list_tokenized_words[l] == list_tokenized_words[m]:
+                       continuable = True 
+                       continue
+                if continuable:
+                    continue
+            if continuable:
+                continue
+
             combined_words = ' '.join(list_tokenized_words[k:k+j])
             #hierarchizer.search_knowledge_hierarchy(combined_words)
 
@@ -60,20 +71,20 @@ def get_list_top_keywords(_document, _threshold):
 
     return list_word_count_sorted
 
-
 def make_dtm():
     whole_document = ""
     df_journal = journal_reader.df_journal.loc[journal_reader.df_journal["SO"] == "Renewable Energy"]
     for i in range(df_journal.shape[0]):
         whole_document += str(df_journal.iloc[i, 11]) + ' '
 
-    list_keyword = get_list_top_keywords(whole_document, 10)[:200] # Renewable Energy -> 1103
+    list_keyword = get_list_top_keywords(whole_document, 10) # Renewable Energy -> 1103
     print(list_keyword)
     list_document_refined = []
 
     for i in tqdm(range(df_journal.shape[0]), desc = "텍스트 전처리 과정 진행 중"):
         document = str(df_journal.iloc[i, 11])
-        list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(document)))
+        list_tokenized_words = regularizer.preprocess_text(document)
+
         list_document_refined.append("")
         for j in range(1, N_GRAM + 1):
             for k in range(len(list_tokenized_words) - j):
@@ -84,7 +95,7 @@ def make_dtm():
     #df_journal["_AB2"] = list_document_refined
     dict_term_fair_frequency = { }
 
-    THRESHOLD_FREQUENCY = 80
+    THRESHOLD_FREQUENCY = 50
 
     for i in tqdm(range(len(list_keyword)), desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
         for j in range(i + 1, len(list_keyword)):
@@ -96,7 +107,7 @@ def make_dtm():
                     else:
                         dict_term_fair_frequency[key] = 1
     
-    print(dict_term_fair_frequency)
+    #print(dict_term_fair_frequency)
     G_centrality = nx.Graph()
     for term_fair, frequency in dict_term_fair_frequency.items():
         if frequency >= THRESHOLD_FREQUENCY:
@@ -108,31 +119,24 @@ def make_dtm():
 
     sorted_dgr = sorted(dgr.items(), key=operator.itemgetter(1), reverse=True)
     sorted_pgr = sorted(pgr.items(), key=operator.itemgetter(1), reverse=True)
-
+    
     G = nx.Graph()
-
-    # 페이지 랭크에 따라 두 노드 사이의 연관성을 결정한다. (단어쌍의 연관성)
-    # 연결 중심성으로 계산한 척도에 따라 노드의 크기가 결정된다. (단어의 등장 빈도수)
     for i in range(len(sorted_pgr)):
-        G.add_node(sorted_pgr[i][0], nodesize=sorted_dgr[i][1])
+        G.add_node(sorted_pgr[i][0], nodesize = sorted_dgr[i][1])
 
     for term_fair, frequency in dict_term_fair_frequency.items():
         if frequency >= THRESHOLD_FREQUENCY:
             list_term = term_fair.split('**')
-            G.add_weighted_edges_from([(list_term[0], list_term[1], frequency * 2)])
-
-    sizes = [G.nodes[node]['nodesize'] * 1200 for node in G]
+            G.add_weighted_edges_from([(list_term[0], list_term[1], frequency)])
 
     import matplotlib.pyplot as plt
-    options = {
-        'edge_color': '#0099FF',
-        'width': 1,
-        'with_labels': True,
-        'font_weight': 'regular',
-    }
-    nx.draw(G, node_size=sizes, pos=nx.spring_layout(G, k=3.5, iterations=100), **options)  # font_family로 폰트 등록
+    import matplotlib.font_manager as fm
+
+    nx.draw(G, with_labels=True, 
+            node_size = [G.nodes[node]['nodesize'] * 4000 for node in G], 
+            node_color=range(len(G)), width=1, edge_color="grey", alpha=0.75,
+            font_weight="bold")
     ax = plt.gca()
-    ax.collections[0].set_edgecolor("#0099FF")
     plt.show()
 
 make_dtm()

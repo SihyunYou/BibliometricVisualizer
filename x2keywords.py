@@ -4,7 +4,7 @@
 import journal_reader
 import hierarchizer
 from hierarchizer import N_GRAM
-import regularizer
+from regularizer import preprocess_text
 import numpy
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.cluster import DBSCAN
@@ -13,51 +13,17 @@ from tqdm import tqdm
 import networkx as nx
 import operator
 
-
 def make_bow(_document):
-    list_tokenized_words = regularizer.preprocess_text(_document)
+    list_tokenized_words = preprocess_text(_document)
     word_to_index, bow = {}, []
 
-    for j in range(1, N_GRAM + 1):
-        for k in range(len(list_tokenized_words) - j):
-            continuable = False
-            for l in range(k, k + j): # 동어 반복 제거
-                for m in range(l + 1, k + j):
-                    if list_tokenized_words[l] == list_tokenized_words[m]:
-                       continuable = True 
-                       continue
-                if continuable:
-                    continue
-            if continuable:
-                continue
-
-            combined_words = ' '.join(list_tokenized_words[k:k+j])
-            #hierarchizer.search_knowledge_hierarchy(combined_words)
-
-            #if len(hierarchizer.list_searched) > 0:
-            #    for searched_word in hierarchizer.list_searched:
-            #        if searched_word not in word_to_index.keys():
-            #            word_to_index[searched_word] = len(word_to_index)
-            #            bow.insert(len(word_to_index) - 1, 1)
-            #        else:
-            #            index = word_to_index.get(searched_word)
-            #            bow[index] += 1
-            #elif j == 1:
-            #    if combined_words not in word_to_index.keys():
-            #        word_to_index[combined_words] = len(word_to_index)
-            #        bow.insert(len(word_to_index) - 1, 1)
-            #    else:
-            #        index = word_to_index.get(combined_words)
-            #        bow[index] += 1
-
-            if combined_words not in word_to_index.keys():
-                word_to_index[combined_words] = len(word_to_index)
-                bow.insert(len(word_to_index) - 1, 1)
-            else:
-                index = word_to_index.get(combined_words)
-                bow[index] += 1
-
-            #hierarchizer.list_searched = []   
+    for word in list_tokenized_words:
+        if word not in word_to_index.keys():
+            word_to_index[word] = len(word_to_index)
+            bow.insert(len(word_to_index) - 1, 1)
+        else:
+            index = word_to_index.get(word)
+            bow[index] += 1
     return (word_to_index, bow)
 
 def get_list_top_keywords(_document, _threshold):
@@ -77,42 +43,43 @@ def make_dtm():
     for i in range(df_journal.shape[0]):
         whole_document += str(df_journal.iloc[i, 11]) + ' '
 
-    list_keyword = get_list_top_keywords(whole_document, 10) # Renewable Energy -> 1103
-    print(list_keyword)
-    list_document_refined = []
+    list_keyword = get_list_top_keywords(whole_document, 5)
+    list_refined_keyword = []
+    for keyword, frequency in list_keyword:
+        if keyword in hierarchizer.dict_unigram.values():
+            if frequency >= 5:
+                list_refined_keyword.append(keyword)
+        else:
+            if frequency >= 50:
+                list_refined_keyword.append(keyword)
+    print(list_refined_keyword)
 
+    list_tokenized_document = []
     for i in tqdm(range(df_journal.shape[0]), desc = "텍스트 전처리 과정 진행 중"):
         document = str(df_journal.iloc[i, 11])
-        list_tokenized_words = regularizer.preprocess_text(document)
+        list_tokenized_words = []
+        for word in preprocess_text(document):
+            if word in list_refined_keyword:
+                list_tokenized_words.append(word)
+        list_tokenized_document.append(list_tokenized_words)
+    #print(list_tokenized_document)
 
-        list_document_refined.append("")
-        for j in range(1, N_GRAM + 1):
-            for k in range(len(list_tokenized_words) - j):
-                combined_words = ' '.join(list_tokenized_words[k:k+j])
-                if combined_words in [t[0] for t in list_keyword]:
-                    list_document_refined[-1] += combined_words + ' '
-
-    #df_journal["_AB2"] = list_document_refined
     dict_term_fair_frequency = { }
-
-    THRESHOLD_FREQUENCY = 50
-
-    for i in tqdm(range(len(list_keyword)), desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
-        for j in range(i + 1, len(list_keyword)):
-            for k in range(len(list_document_refined)):
-                if(list_document_refined[k].count(list_keyword[i][0]) > 0 and list_document_refined[k].count(list_keyword[j][0]) > 0):
-                    key = list_keyword[i][0] + "**" + list_keyword[j][0]
+    for i in tqdm(range(len(list_refined_keyword)), desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
+        for j in range(i + 1, len(list_refined_keyword)):
+            for document in list_tokenized_document:
+                if(list_refined_keyword[i] in document and list_refined_keyword[j] in document):
+                    key = (list_refined_keyword[i] + "**" + list_refined_keyword[j]).replace('_', '\n')
                     if key in dict_term_fair_frequency:
                         dict_term_fair_frequency[key] += 1
                     else:
                         dict_term_fair_frequency[key] = 1
-    
-    #print(dict_term_fair_frequency)
+    print(dict_term_fair_frequency)
+
     G_centrality = nx.Graph()
     for term_fair, frequency in dict_term_fair_frequency.items():
-        if frequency >= THRESHOLD_FREQUENCY:
-            list_term = term_fair.split('**')
-            G_centrality.add_edge(list_term[0], list_term[1], weight = frequency)
+        list_term = term_fair.split('**')
+        G_centrality.add_edge(list_term[0], list_term[1], weight = frequency)
     
     dgr = nx.degree_centrality(G_centrality)        # 연결 중심성
     pgr = nx.pagerank(G_centrality)                 # 페이지 랭크
@@ -125,17 +92,16 @@ def make_dtm():
         G.add_node(sorted_pgr[i][0], nodesize = sorted_dgr[i][1])
 
     for term_fair, frequency in dict_term_fair_frequency.items():
-        if frequency >= THRESHOLD_FREQUENCY:
-            list_term = term_fair.split('**')
-            G.add_weighted_edges_from([(list_term[0], list_term[1], frequency)])
+        list_term = term_fair.split('**')
+        G.add_weighted_edges_from([(list_term[0], list_term[1], frequency)])
 
     import matplotlib.pyplot as plt
     import matplotlib.font_manager as fm
 
     nx.draw(G, with_labels=True, 
-            node_size = [G.nodes[node]['nodesize'] * 4000 for node in G], 
-            node_color=range(len(G)), width=1, edge_color="grey", alpha=0.75,
-            font_weight="bold")
+            node_size = [G.nodes[node]['nodesize'] * G.nodes[node]['nodesize'] * 3000 for node in G], 
+            node_color= range(len(G)), width=0.5, edge_color="grey", alpha=0.8,
+            font_size = 8, font_weight="regular")
     ax = plt.gca()
     plt.show()
 

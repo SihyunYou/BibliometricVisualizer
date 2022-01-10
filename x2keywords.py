@@ -1,14 +1,12 @@
 # x2keywords.py
 # Trend of keywords from x(= years or journals)
 
-import abstract_reader
+from abstract_reader import df_abstract
 import hierarchizer
 from regularizer import preprocess_text
-import numpy
-from nltk.tokenize import word_tokenize
 from tqdm import tqdm
 
-def make_bow(_document):
+def get_list_top_keywords(_document, _threshold):
     list_tokenized_words = preprocess_text(_document)
     word_to_index, bow = {}, []
 
@@ -19,27 +17,22 @@ def make_bow(_document):
         else:
             index = word_to_index.get(word)
             bow[index] += 1
-    return (word_to_index, bow)
 
-def get_list_top_keywords(_document, _threshold):
-    word_to_index, bow = make_bow(_document)
     dict_word_count = {}
-
     for key, value in word_to_index.items():
         if(bow[value] >= _threshold):
             dict_word_count[key] = bow[value]
-    list_word_count_sorted = sorted(dict_word_count.items(), key = lambda item: item[1], reverse = True)
 
-    return list_word_count_sorted
+    return dict_word_count
 
 def get_dict_term_fair_frequency(_column_name, _query):
-    df_extracted_abstract = abstract_reader.df_abstract.loc[abstract_reader.df_abstract[_column_name] == _query]
-    list_raw_document = [str(df_extracted_abstract.iloc[i, 11]) for i in range(df_extracted_abstract.shape[0])]
+    df = df_abstract.loc[df_abstract[_column_name] == _query]
+    list_raw_document = [str(df.iloc[i, 11]) for i in range(df.shape[0])]
     list_tokenized_document = [preprocess_text(d) for d in list_raw_document]
-    list_keyword = get_list_top_keywords(' '.join(list_raw_document), 5)
+    dict_word_count = get_list_top_keywords(' '.join(list_raw_document), 5)
     list_refined_keyword = []
 
-    for keyword, frequency in list_keyword:
+    for keyword, frequency in dict_word_count.items():
         if keyword in hierarchizer.dict_unigram.values():
             if frequency >= 5:
                 list_refined_keyword.append(keyword)
@@ -62,32 +55,6 @@ def get_dict_term_fair_frequency(_column_name, _query):
 
     return dict_term_fair_frequency
 
-def get_trend_of_keywords_from_year(_remark_year):
-    document_py = ""
-    df_abstract_py = abstract_reader.df_abstract.loc[abstract_reader.df_abstract["PY"] == str(_remark_year)]
-
-    for i in range(df_abstract_py.shape[0]):
-        document_py += str(df_abstract_py.iloc[i, 11]) + ' '
-    return get_list_top_keywords(document_py, 10)
-
-def get_trend_of_keywords_from_journal(_journal):
-    # return하는 리스트 형식이 달라지므로 주의
-    if _journal != "all":
-        document_so = ""
-        df_abstract_so = abstract_reader.df_abstract.loc[abstract_reader.df_abstract["SO"] == _journal]
-        for i in range(df_abstract_so.shape[0]):
-            document_so += str(df_abstract_so.iloc[i, 11]) + ' '
-    
-        return get_list_top_keywords(document_so)
-    else:
-        list_so = []
-        for journal in abstract_reader.list_interesting_journal:
-             document_so = ""
-             df_abstract_so = abstract_reader.df_abstract.loc[abstract_reader.df_abstract["SO"] == journal]
-             for i in range(df_abstract_so.shape[0]):
-                 document_so += str(df_abstract_so.iloc[i, 11]) + ' '
-    
-             list_top_keywords = get_list_top_keywords(document_so)
-             list_so.append((journal, list_top_keywords))
-
-        return list_so
+def get_trend_of_keywords(_column_name, _query):
+    df = df_abstract.loc[df_abstract[_column_name] == _query]
+    return get_list_top_keywords(' '.join([str(df.iloc[i, 11]) for i in range(df.shape[0])]), 10)

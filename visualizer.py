@@ -36,27 +36,16 @@ pylab.rcParams.update({
 def ShowTrendOfYearsFromKeyword(_your_keyword, _start_year, _end_year):
     list_raw = keyword2x.get_trend_of_years_from_keyword(_your_keyword, _start_year, _end_year)
     print(list_raw)
-    
-    n = 3
-    list_sma = []
-    for i in range(len(list_raw) - n + 1):
-        s = 0
-        for j in range(n):
-            s += list_raw[i + j][1]
-        list_sma.append(s / n)
 
-    max_y = max([x[1] for x in list_raw]) * 1.35
+    max_y = max([y[1] for y in list_raw]) * 1.35
     max_y = max_y - max_y % 10
     n_xticks = _end_year - _start_year + 1
     fig, ax = pyplot.subplots()
     ax.cla()
     ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(_start_year) + ' to ' + str(_end_year), y = y)
-    #ax.plot(numpy.arange(n - 1, n_xticks), 
-    #       list_sma,   
-    #       'o-', 
-    #       label = 'Simple moving average')
+
     ax.bar(numpy.arange(n_xticks), 
-           [x[1] for x in list_raw], 
+           [y[1] for y in list_raw], 
            width = 0.5, 
            color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
            label = "Number of keywords referred in n year")
@@ -64,6 +53,27 @@ def ShowTrendOfYearsFromKeyword(_your_keyword, _start_year, _end_year):
     ax.set_ylim(0, max_y)
     ax.set_yticks(numpy.arange(0, max_y + 10, 10))
     ax.set_xticks(numpy.arange(n_xticks), [x[0] for x in list_raw])
+    pyplot.show()
+
+def ShowTrendOfJournalsFromKeyword(_your_keyword, _n_journals):
+    list_raw = keyword2x.get_trend_of_journals_from_keyword(_your_keyword, _n_journals)
+    print(list_raw)
+    
+    max_y = max([x[1] for x in list_raw]) * 1.35
+    max_y = max_y - max_y % 10
+   
+    fig, ax = pyplot.subplots()
+    ax.cla()
+    ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword in top ' + str(_n_journals) + ' journals', y = y)
+    ax.bar(numpy.arange(_n_journals), 
+           [x[1] for x in list_raw],
+           width = 0.5, 
+           color = get_palette_list([0xCC, 0xFF, 0xCC], [0x00, 0x66, 0x00], _n_journals), 
+           label = "Number of keywords referred in the journal")
+    ax.legend(loc='upper right')   
+    ax.set_ylim(0, max_y)
+    ax.set_yticks(numpy.arange(0, max_y + 10, 10))
+    ax.set_xticks(numpy.arange(_n_journals), [x[0].replace(' ', '\n') for x in list_raw], fontsize = 11)
     pyplot.show()
 
 def ShowFluctuationOfKeywords(_list_your_keyword, _remark_year, _end_year):
@@ -101,72 +111,15 @@ def ShowFluctuationOfKeywords(_list_your_keyword, _remark_year, _end_year):
     ax.set_xticks(numpy.arange(len(_list_your_keyword)), [x[0].replace(' ', '\n') for x in list_sorted], fontsize = 14)
     pyplot.show()
 
-def ShowTrendOfJournalsFromKeyword(_your_keyword, _n_journals):
-    list_raw = keyword2x.get_trend_of_journals_from_keyword(_your_keyword, _n_journals)
-    print(list_raw)
-    list_raw.reverse()
-    
-    max_y = max([x[1] for x in list_raw]) * 1.35
-    max_y = max_y - max_y % 10
-   
-    fig, ax = pyplot.subplots()
-    ax.cla()
-    ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword in top ' + str(_n_journals) + ' journals', y = y)
-    ax.bar(numpy.arange(_n_journals), 
-           [x[1] for x in list_raw],
-           width = 0.5, 
-           color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], _n_journals), 
-           label = "Number of keywords referred in the journal")
-    ax.legend(loc='upper right')   
-    ax.set_ylim(0, max_y)
-    ax.set_yticks(numpy.arange(0, max_y + 10, 10))
-    ax.set_xticks(numpy.arange(_n_journals), [x[0].replace(' ', '\n') for x in list_raw], fontsize = 11)
-    pyplot.show()
+def ShowWordCloudOfKeywords(_column_name, _query):
+    dict_word_count = x2keywords.get_trend_of_keywords(_column_name, _query)
+    print(dict_word_count)
 
-def ShowTrendOfKeywordsFromYear(_remark_year, _maximum_keywords):
-    list_raw = x2keywords.get_trend_of_keywords_from_year(_remark_year)
-    print(list_raw)
-    list_raw = list_raw[:_maximum_keywords]
-    list_raw.reverse()
-
-    max_x = max([x[1] for x in list_raw]) * 1.05
-    max_x = max_x - max_x % 10
-
-    fig, ax = pyplot.subplots()
-    ax.cla()
-    ax.set_title('Trend of keywords in ' + str(_remark_year), y = y)
-    ax.barh(numpy.arange(len(list_raw)), 
-           [x[1] for x in list_raw],
-           height = 0.8, 
-           color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], len(list_raw)), 
-           label = "Number of keywords referred in " + str(_remark_year))
-    ax.legend(loc='lower right')   
-    ax.set_xlim(0, max_x)
-    ax.set_xticks(numpy.arange(0, max_x + 50, 50))
-    ax.set_yticks(numpy.arange(len(list_raw)), [x[0] for x in list_raw], fontsize = 12)
-    pyplot.show()
-
-def ShowTrendOfKeywordsFromJournal(_journal_name, _maximum_keywords):
-    list_raw = x2keywords.get_trend_of_keywords_from_journal("Renewable Energy")
-    list_raw = list_raw[:_maximum_keywords]
-    print(list_raw)
-    list_raw.reverse()
-
-    max_x = max([x[1] for x in list_raw]) * 1.05
-    max_x = max_x - max_x % 10
-
-    fig, ax = pyplot.subplots()
-    ax.cla()
-    ax.set_title('Trend of keywords in the journal \'' + str(_journal_name) + '\'', y = y)
-    ax.barh(numpy.arange(len(list_raw)), 
-           [x[1] for x in list_raw],
-           height = 0.8, 
-           color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], len(list_raw)), 
-           label = "Number of keywords referred in " + str(_journal_name))
-    ax.legend(loc='lower right')   
-    ax.set_xlim(0, max_x)
-    ax.set_xticks(numpy.arange(0, max_x + 100, 100))
-    ax.set_yticks(numpy.arange(len(list_raw)), [x[0] for x in list_raw], fontsize = 12)
+    from wordcloud import WordCloud
+    word_cloud = WordCloud(background_color = "white", max_words = 100, width = 1000, height = 800).generate_from_frequencies(dict_word_count)
+    pyplot.figure(figsize = (15, 15))
+    pyplot.imshow(word_cloud)
+    pyplot.axis('off')
     pyplot.show()
 
 def ShowNetworkOfKeywords(_column_name, _query):

@@ -24,6 +24,9 @@ def apply_stopwords(_list_tokenized_words):
             temps.append(word)
     return temps
 
+def preprocess_text_no_unigram(_text):
+    return apply_stopwords(word_tokenize(regularize_abstract(_text)))
+
 def preprocess_text(_text):
     list_tokenized_words = hierarchizer.replace_synonym(word_tokenize(regularize_abstract(_text)))
     tokens_pos = nltk.pos_tag(list_tokenized_words)

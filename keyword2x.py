@@ -1,10 +1,9 @@
 # keyword2x.py
 # x(= trend of years or journals) from a keyword
 
-import abstract_reader
+from abstract_reader import df_abstract
 import hierarchizer
-import regularizer
-from nltk.tokenize import word_tokenize
+from regularizer import preprocess_text_no_unigram
 
 list_column = [10, 11] # TI, AB
 def get_count_interesting_keyword(_df_abstract, _interesting_keyword):
@@ -19,7 +18,7 @@ def get_count_interesting_keyword(_df_abstract, _interesting_keyword):
 
         for n in list_column:
             if breakable: break
-            list_tokenized_words = regularizer.apply_stopwords(word_tokenize(regularizer.regularize_abstract(_df_abstract.iloc[i, n])))
+            list_tokenized_words = preprocess_text_no_unigram(_df_abstract.iloc[i, n])
 
             if is_hierarchical:
                 for j in range(1, hierarchizer.MAX_LEN_WORD_GRAPH + 1):
@@ -47,14 +46,9 @@ def get_count_interesting_keyword(_df_abstract, _interesting_keyword):
     return count_interesting_keyword
 
 def get_trend_of_years_from_keyword(_your_keyword, _start_year, _end_year):
-    list_py = []
-    for n in range(_start_year, _end_year + 1):
-        c = get_count_interesting_keyword(abstract_reader.df_abstract.loc[abstract_reader.df_abstract["PY"] == str(n)], _your_keyword)
-        list_py.append((n, c))
-    return list_py
+    return [(n, get_count_interesting_keyword(df_abstract.loc[df_abstract["PY"] == str(n)], _your_keyword)) for n in range(_start_year, _end_year + 1)]
 
 def get_trend_of_journals_from_keyword(_your_keyword, _n_journals):
-    dict_so = {}
-    for journal in abstract_reader.list_interesting_journal:
-        dict_so[journal] = get_count_interesting_keyword(abstract_reader.df_abstract.loc[abstract_reader.df_abstract["SO"] == journal], _your_keyword)
-    return sorted(dict_so.items(), key = lambda item: item[1], reverse = True)[:_n_journals]
+    return sorted([(journal, get_count_interesting_keyword(df_abstract.loc[df_abstract["SO"] == journal], _your_keyword)) for journal in df_abstract["SO"].unique()],
+           key = lambda x: x[1],
+           reverse = True)[:_n_journals]

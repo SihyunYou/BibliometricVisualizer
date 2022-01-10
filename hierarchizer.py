@@ -260,6 +260,7 @@ dict_unigram = {
  "predictor": "prediction",
  "prognosis": "prediction",
  "prognose": "prediction",
+ "machine learning": "machine_learning",
  "maximum power point track": "mppt",
  "measuring": "measurement",
  "modul": "module",

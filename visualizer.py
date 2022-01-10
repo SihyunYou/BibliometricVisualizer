@@ -169,3 +169,42 @@ def ShowTrendOfKeywordsFromJournal(_journal_name, _maximum_keywords):
     ax.set_xticks(numpy.arange(0, max_x + 100, 100))
     ax.set_yticks(numpy.arange(len(list_raw)), [x[0] for x in list_raw], fontsize = 12)
     pyplot.show()
+
+def ShowNetworkOfKeywords(_column_name, _query):
+    import networkx as nx
+    import operator
+
+    dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(_column_name, _query)
+    G_centrality = nx.Graph()
+    for term_fair, frequency in dict_term_fair_frequency.items():
+        list_term = term_fair.split('**')
+        G_centrality.add_edge(list_term[0], list_term[1], weight = frequency)
+    
+    dgr = nx.degree_centrality(G_centrality) 
+    pgr = nx.pagerank(G_centrality)     
+
+    sorted_dgr = sorted(dgr.items(), key=operator.itemgetter(1), reverse=True)
+    sorted_pgr = sorted(pgr.items(), key=operator.itemgetter(1), reverse=True)
+    
+    G = nx.Graph()
+    for i in range(len(sorted_pgr)):
+        G.add_node(sorted_pgr[i][0], nodesize = sorted_dgr[i][1])
+
+    for term_fair, frequency in dict_term_fair_frequency.items():
+        list_term = term_fair.split('**')
+        G.add_weighted_edges_from([(list_term[0], list_term[1], frequency)])
+
+    import matplotlib.pyplot as plt
+    import matplotlib.font_manager as fm
+
+    nx.draw(G, 
+            with_labels = True, 
+            node_size = [G.nodes[node]['nodesize'] * G.nodes[node]['nodesize'] * 2400 for node in G], 
+            node_color = range(len(G)),
+            width = 0.5, 
+            edge_color = "grey", 
+            alpha = 0.8,
+            font_size = 7, 
+            font_weight = "regular")
+    ax = plt.gca()
+    plt.show()

@@ -8,7 +8,6 @@ import x2keywords
 from tqdm import tqdm
 
 pyplot.style.use("default")
-
 y = 1.04
 
 def get_palette_list(_from, _to, _n):

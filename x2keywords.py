@@ -12,7 +12,7 @@ def make_bow(_document):
     list_tokenized_words = preprocess_text(_document)
     word_to_index, bow = {}, []
 
-    for word in list_tokenized_words:
+    for word in tqdm(list_tokenized_words, desc = "BoW 생성 중"):
         if word not in word_to_index.keys():
             word_to_index[word] = len(word_to_index)
             bow.insert(len(word_to_index) - 1, 1)
@@ -33,8 +33,8 @@ def get_list_top_keywords(_document, _threshold):
     return list_word_count_sorted
 
 def get_dict_term_fair_frequency(_column_name, _query):
-    df_abstract = abstract_reader.df_abstract.loc[abstract_reader.df_abstract[_column_name] == _query]
-    list_raw_document = [str(df_abstract.iloc[i, 11]) for i in range(df_abstract.shape[0])]
+    df_extracted_abstract = abstract_reader.df_abstract.loc[abstract_reader.df_abstract[_column_name] == _query]
+    list_raw_document = [str(df_extracted_abstract.iloc[i, 11]) for i in range(df_extracted_abstract.shape[0])]
     list_tokenized_document = [preprocess_text(d) for d in list_raw_document]
     list_keyword = get_list_top_keywords(' '.join(list_raw_document), 5)
     list_refined_keyword = []

@@ -1,7 +1,7 @@
 # keyword2x.py
 # x(= trend of years or journals) from a keyword
 
-from abstract_reader import df_abstract
+from abstract_reader import read_abstract
 import hierarchizer
 from regularizer import preprocess_text_no_unigram
 
@@ -45,10 +45,12 @@ def get_count_interesting_keyword(_df_abstract, _interesting_keyword):
 
     return count_interesting_keyword
 
-def get_trend_of_years_from_keyword(_your_keyword, _start_year, _end_year):
+def get_trend_of_years_from_keyword(_query, _limit_journal, _your_keyword, _start_year, _end_year):
+    df_abstract = read_abstract(_query, _limit_journal)
     return [(n, get_count_interesting_keyword(df_abstract.loc[df_abstract["PY"] == str(n)], _your_keyword)) for n in range(_start_year, _end_year + 1)]
 
-def get_trend_of_journals_from_keyword(_your_keyword, _n_journals):
+def get_trend_of_journals_from_keyword(_query, _limit_journal, _your_keyword, _n_journals):
+    df_abstract = read_abstract(_query, _limit_journal)
     return sorted([(journal, get_count_interesting_keyword(df_abstract.loc[df_abstract["SO"] == journal], _your_keyword)) for journal in df_abstract["SO"].unique()],
            key = lambda x: x[1],
            reverse = True)[:_n_journals]

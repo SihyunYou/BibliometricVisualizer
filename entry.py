@@ -1,7 +1,15 @@
-import visualizer
+from bibliometric_visualizer import BibliometricVisualizer
 
-#visualizer.ShowTrendOfYearsFromKeyword("machine learning", 2006, 2021)
+Query = """\
+TITLE-ABS-KEY ( "Photovoltaic" OR "BIPV" OR "PV" OR "Irradiation") AND
+TITLE-ABS-KEY ( "solar" OR "sun") AND
+TITLE-ABS-KEY ( "machine learning" OR "prediction" OR "modeling" ) AND
+( EXCLUDE ( SUBJAREA , "MATE" ) OR EXCLUDE ( SUBJAREA , "CHEM" ) OR EXCLUDE ( SUBJAREA , "CENG" ) ) AND ( EXCLUDE ( SUBJAREA , "MEDI" ) OR EXCLUDE ( SUBJAREA , "SOCI" ) OR EXCLUDE ( SUBJAREA , "AGRI" ) OR EXCLUDE ( SUBJAREA , "BIOC" ) OR EXCLUDE ( SUBJAREA , "BUSI" ) OR EXCLUDE ( SUBJAREA , "ECON" ) OR EXCLUDE ( SUBJAREA , "IMMU" ) OR EXCLUDE ( SUBJAREA , "NEUR" ) OR EXCLUDE ( SUBJAREA , "PHAR" ) OR EXCLUDE ( SUBJAREA , "HEAL" ) OR EXCLUDE ( SUBJAREA , "PSYC" ) OR EXCLUDE ( SUBJAREA , "ARTS" ) OR EXCLUDE ( SUBJAREA , "VETE" ) OR EXCLUDE ( SUBJAREA , "NURS" ) OR EXCLUDE ( SUBJAREA , "DENT" ) OR EXCLUDE ( SUBJAREA , "Undefined" ) ) """
+                 
 #visualizer.ShowFluctuationOfKeywords(["clustering", "regression", "classification", "reinforcement learning", "dimension reduction", "ensemble"], 2006, 2021)
-visualizer.ShowTrendOfJournalsFromKeyword("machine learning", 10)
-visualizer.ShowWordCloudOfKeywords("SO", "Renewable Energy")
+
+visualizer = BibliometricVisualizer(Query, True)
+#visualizer.ShowTrendOfYearsFromKeyword("machine learning", 2006, 2021)
+#visualizer.ShowTrendOfJournalsFromKeyword("machine learning", 10)
+#visualizer.ShowWordCloudOfKeywords("SO", "Renewable Energy")
 visualizer.ShowNetworkOfKeywords("SO", "Renewable Energy")

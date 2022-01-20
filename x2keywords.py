@@ -1,7 +1,7 @@
 # x2keywords.py
 # Trend of keywords from x(= years or journals)
 
-from abstract_reader import df_abstract
+from abstract_reader import read_abstract
 import hierarchizer
 from regularizer import preprocess_text
 from tqdm import tqdm
@@ -25,8 +25,14 @@ def get_list_top_keywords(_document, _threshold):
 
     return dict_word_count
 
-def get_dict_term_fair_frequency(_column_name, _query):
-    df = df_abstract.loc[df_abstract[_column_name] == _query]
+def get_trend_of_keywords(_query, _limit_journal, _column_name, _column_value):
+    df_abstract = read_abstract(_query, _limit_journal)
+    df = df_abstract.loc[df_abstract[_column_name] == _column_value]
+    return get_list_top_keywords(' '.join([str(df.iloc[i, 11]) for i in range(df.shape[0])]), 10)
+
+def get_dict_term_fair_frequency(_query, _limit_journal, _column_name, _column_value):
+    df_abstract = read_abstract(_query, _limit_journal)
+    df = df_abstract.loc[df_abstract[_column_name] == _column_value]
     list_raw_document = [str(df.iloc[i, 11]) for i in range(df.shape[0])]
     list_tokenized_document = [preprocess_text(d) for d in list_raw_document]
     dict_word_count = get_list_top_keywords(' '.join(list_raw_document), 5)
@@ -54,7 +60,3 @@ def get_dict_term_fair_frequency(_column_name, _query):
     print(dict_term_fair_frequency)
 
     return dict_term_fair_frequency
-
-def get_trend_of_keywords(_column_name, _query):
-    df = df_abstract.loc[df_abstract[_column_name] == _query]
-    return get_list_top_keywords(' '.join([str(df.iloc[i, 11]) for i in range(df.shape[0])]), 10)

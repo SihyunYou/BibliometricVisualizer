@@ -6,13 +6,11 @@ from nltk.corpus import wordnet as wn
 
 nltk.download('averaged_perceptron_tagger')
 nltk.download('wordnet')
+nltk.download('omw-1.4')
 
 words2stop = [line.strip() for line in open("stopword.txt", 'r')]
 
-re1 = re.compile('[^A-Za-z0-9]+')
-re2 = re.compile('&')
-def regularize_publication_name(_str):
-    return re1.sub('', re2.sub('and', str(_str))).lower()
+
 re3 = re.compile('[^a-z-/\s]+')
 def regularize_abstract(_str):
     return re3.sub('', str(_str).lower())

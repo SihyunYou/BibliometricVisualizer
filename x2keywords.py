@@ -2,61 +2,51 @@
 # Trend of keywords from x(= years or journals)
 
 from abstract_reader import read_abstract
-import hierarchizer
-from regularizer import preprocess_text
+from unigramer import Unigramer
 from tqdm import tqdm
+    
+def cut_dict(_dict, _threshold = 10):
+    for key in _dict:
+        if _dict[key] < _threshold:
+            del _dict[key]
+    return _dict
 
-def get_list_top_keywords(_document, _threshold):
-    list_tokenized_words = preprocess_text(_document)
-    word_to_index, bow = {}, []
-
-    for word in tqdm(list_tokenized_words, desc = "BoW 생성 중"):
-        if word not in word_to_index.keys():
-            word_to_index[word] = len(word_to_index)
-            bow.insert(len(word_to_index) - 1, 1)
-        else:
-            index = word_to_index.get(word)
-            bow[index] += 1
-
-    dict_word_count = {}
-    for key, value in word_to_index.items():
-        if(bow[value] >= _threshold):
-            dict_word_count[key] = bow[value]
-
-    return dict_word_count
-
-def get_trend_of_keywords(_query, _limit_journal, _column_name, _column_value):
+def substract_df_abstract(_query, _range_year, _publication_name, _limit_journal):
     df_abstract = read_abstract(_query, _limit_journal)
-    df = df_abstract.loc[df_abstract[_column_name] == _column_value]
-    return get_list_top_keywords(' '.join([str(df.iloc[i, 11]) for i in range(df.shape[0])]), 10)
+    df_abstract = df_abstract.loc[\
+        (df_abstract["PY"].astype(int) >= _range_year[0]) &\
+        (df_abstract["PY"].astype(int) >= _range_year[0]) &\
+        (df_abstract["SO"] == _publication_name)]
+    return df_abstract
 
-def get_dict_term_fair_frequency(_query, _limit_journal, _column_name, _column_value):
-    df_abstract = read_abstract(_query, _limit_journal)
-    df = df_abstract.loc[df_abstract[_column_name] == _column_value]
-    list_raw_document = [str(df.iloc[i, 11]) for i in range(df.shape[0])]
-    list_tokenized_document = [preprocess_text(d) for d in list_raw_document]
-    dict_word_count = get_list_top_keywords(' '.join(list_raw_document), 5)
-    list_refined_keyword = []
+def get_trend_of_keywords(_query, _range_year, _publication_name, _limit_journal):
+    unigramer = Unigramer()
+    dict_bow = {}
+    df_abstract = substract_df_abstract(_query, _range_year, _publication_name, _limit_journal)
 
-    for keyword, frequency in dict_word_count.items():
-        if keyword in hierarchizer.dict_unigram.values():
-            if frequency >= 5:
-                list_refined_keyword.append(keyword)
-        else:
-            if frequency >= 50:
-                list_refined_keyword.append(keyword)
-    print(list_refined_keyword)
+    for raw_abstract in tqdm([str(df_abstract.iloc[i, 11]) for i in range(df_abstract.shape[0])], desc = "BoW 생성 중(x2keywords)"):
+        list_tokenized_unigram = unigramer.tokenize(raw_abstract)
+        for unigram in list_tokenized_unigram:
+            if unigram in dict_bow:
+                dict_bow[unigram] += 1
+            else:
+                dict_bow[unigram] = 1
 
-    dict_term_fair_frequency = { }
-    for i in tqdm(range(len(list_refined_keyword)), desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
-        for j in range(i + 1, len(list_refined_keyword)):
-            for document in list_tokenized_document:
-                if(list_refined_keyword[i] in document and list_refined_keyword[j] in document):
-                    key = (list_refined_keyword[i] + "**" + list_refined_keyword[j]).replace('_', '\n')
-                    if key in dict_term_fair_frequency:
-                        dict_term_fair_frequency[key] += 1
-                    else:
-                        dict_term_fair_frequency[key] = 1
-    print(dict_term_fair_frequency)
+    return cut_dict(dict_bow)
 
-    return dict_term_fair_frequency
+def get_dict_term_fair_frequency(_query, _range_year, _publication_name, _limit_journal):
+    unigramer = Unigramer()
+    dict_term_fair_frequency = {}
+    df_abstract = substract_df_abstract(_query, _range_year, _publication_name, _limit_journal)
+
+    for raw_abstract in tqdm([str(df_abstract.iloc[i, 11]) for i in range(df_abstract.shape[0])], desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
+        list_tokenized_unigram = unigramer.tokenize(raw_abstract)
+        for i in range(len(list_tokenized_unigram)):
+            for j in range(i + 1, len(list_tokenized_unigram)):
+                key = list_tokenized_unigram[i] + "**" + list_tokenized_unigram[j]
+                if key in dict_term_fair_frequency:
+                    dict_term_fair_frequency[key] += 1
+                else:
+                    dict_term_fair_frequency[key] = 1
+
+    return cut_dict(dict_term_fair_frequency)

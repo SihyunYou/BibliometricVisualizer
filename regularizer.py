@@ -1,44 +1,18 @@
-import re
-import nltk
-from nltk.tokenize import word_tokenize
-import hierarchizer
-from nltk.corpus import wordnet as wn
+from abc import *
 
-nltk.download('averaged_perceptron_tagger')
-nltk.download('wordnet')
-nltk.download('omw-1.4')
+class Preprocessor:
+    def __correct_abstract_error(self, _abstract):
+        try:
+            for i in range(len(_abstract)):
+                if (_abstract[i] == '.' or _abstract[i].islower()) and _abstract[i + 1].isupper():
+                    return _abstract[i + 1:]
+        except:
+            pass
+        return _abstract
 
-words2stop = [line.strip() for line in open("stopword.txt", 'r')]
+class Regularizer(Preprocessor, metaclass = ABCMeta):
+    def __regularize_abstract(self, _abstract):
+        pass
 
-
-re3 = re.compile('[^a-z-/\s]+')
-def regularize_abstract(_str):
-    return re3.sub('', str(_str).lower())
-
-def apply_stopwords(_list_tokenized_words):
-    temps = []
-    for word in _list_tokenized_words:
-        if word not in words2stop and len(word) >= 3:
-            temps.append(word)
-    return temps
-
-def preprocess_text_no_unigram(_text):
-    return apply_stopwords(word_tokenize(regularize_abstract(_text)))
-
-def preprocess_text(_text):
-    list_tokenized_words = hierarchizer.replace_synonym(word_tokenize(regularize_abstract(_text)))
-    tokens_pos = nltk.pos_tag(list_tokenized_words)
-    NN_words, list_specific_unigram = [], []
-    for word, pos in tokens_pos:
-        if word in hierarchizer.dict_unigram.values():
-            list_specific_unigram.append(word)
-        elif 'NN' in pos:
-            NN_words.append(word)
-
-    wlem = nltk.WordNetLemmatizer()
-    lemmatized_words = []
-    for word in NN_words:
-        new_word = wlem.lemmatize(word, 'n')
-        lemmatized_words.append(new_word)
-
-    return apply_stopwords(lemmatized_words + list_specific_unigram)
+    def tokenize(self, _abstract):
+        pass

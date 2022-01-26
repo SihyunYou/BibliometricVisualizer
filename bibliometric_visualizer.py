@@ -34,34 +34,35 @@ pylab.rcParams.update({
             'font.family' : 'S-Core Dream'})
 
 class BibliometricVisualizer:
-    def __init__(self, _query, _limit_journal = True):
+    def __init__(self, _query, _range_year, _limit_journal = True):
         self.query = _query
+        self.range_year = _range_year
         self.limit_journal = _limit_journal
 
-    def ShowTrendOfYearsFromKeyword(self, _your_keyword, _start_year, _end_year):
-        list_raw = keyword2x.get_trend_of_years_from_keyword(self.query, self.limit_journal, _your_keyword, _start_year, _end_year)
+    def ShowTrendOfYearsFromKeyword(self, _your_keyword):
+        list_raw = keyword2x.get_trend_of_years_from_keyword(self.query, self.range_year, self.limit_journal, _your_keyword)
         print(list_raw)
 
         max_y = max([y[1] for y in list_raw]) * 1.35
         max_y = max_y - max_y % 10
-        n_xticks = _end_year - _start_year + 1
+        n_xticks = self.range_year[1] - self.range_year[0] + 1
 
         fig, ax = pyplot.subplots()
         ax.cla()
-        ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(_start_year) + ' to ' + str(_end_year), y = y)
+        ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(self.range_year[0]) + ' to ' + str(self.range_year[1]), y = y)
 
         ax.bar(numpy.arange(n_xticks), 
-               [y[1] for y in list_raw], 
-               width = 0.5, 
-               color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
-               label = "Number of keywords referred in n year")
+              [y[1] for y in list_raw], 
+              width = 0.5, 
+              color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
+              label = "Weighted score of keywords in n year")
         ax.legend(loc='upper right')   
         ax.set_ylim(0, max_y)
         ax.set_xticks(numpy.arange(n_xticks), [x[0] for x in list_raw])
         pyplot.show()
 
     def ShowTrendOfJournalsFromKeyword(self, _your_keyword, _n_journals):
-        list_raw = keyword2x.get_trend_of_journals_from_keyword(self.query, self.limit_journal, _your_keyword, _n_journals)
+        list_raw = keyword2x.get_trend_of_journals_from_keyword(self.query, self.range_year, _n_journals, self.limit_journal, _your_keyword)
         print(list_raw)
     
         max_y = max([x[1] for x in list_raw]) * 1.35
@@ -72,10 +73,10 @@ class BibliometricVisualizer:
         ax.cla()
         ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword in top ' + str(_n_journals) + ' journals', y = y)
         ax.bar(numpy.arange(_n_journals), 
-               [x[1] for x in list_raw],
-               width = 0.5, 
-               color = get_palette_list([0xCC, 0xFF, 0xCC], [0x00, 0x66, 0x00], _n_journals), 
-               label = "Number of keywords referred in the journal")
+              [x[1] for x in list_raw],
+              width = 0.5,
+              color = get_palette_list([0xCC, 0xFF, 0xCC], [0x00, 0x66, 0x00], _n_journals), 
+              label = "Weighted score of keywords referred in the journal")
         ax.legend(loc='upper right')   
         ax.set_ylim(0, max_y)
         ax.set_xticks(numpy.arange(_n_journals), [x[0].replace(' ', '\n') for x in list_raw], fontsize = 11)
@@ -117,8 +118,8 @@ class BibliometricVisualizer:
         ax.set_xticks(numpy.arange(len(_list_your_keyword)), [x[0].replace(' ', '\n') for x in list_sorted], fontsize = 14)
         pyplot.show()
 
-    def ShowWordCloudOfKeywords(self, _column_name, _column_value):
-        dict_word_count = x2keywords.get_trend_of_keywords(self.query, self.limit_journal, _column_name, _column_value)
+    def ShowWordCloudOfKeywords(self, _publication_name):
+        dict_word_count = x2keywords.get_trend_of_keywords(self.query, self.range_year, _publication_name, self.limit_journal)
         print(dict_word_count)
 
         from wordcloud import WordCloud
@@ -128,8 +129,8 @@ class BibliometricVisualizer:
         pyplot.axis('off')
         pyplot.show()
 
-    def ShowNetworkOfKeywords(self, _column_name, _column_value):
-        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.query, self.limit_journal, _column_name, _column_value)
+    def ShowNetworkOfKeywords(self, _publication_name):
+        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.query, self.range_year, _publication_name, self.limit_journal)
 
         import networkx as nx
         import operator

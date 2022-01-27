@@ -3,9 +3,13 @@
 import numpy
 import matplotlib.pyplot as pyplot
 import matplotlib.pylab as pylab
+from tqdm import tqdm
+
+from abstract_reader import AbstractReader
 import keyword2x
 import x2keywords
-from tqdm import tqdm
+import bibliometrics
+
 
 pyplot.style.use("default")
 y = 1.04
@@ -34,35 +38,31 @@ pylab.rcParams.update({
             'font.family' : 'S-Core Dream'})
 
 class BibliometricVisualizer:
-    def __init__(self, _query, _range_year, _limit_journal = True):
-        self.query = _query
-        self.range_year = _range_year
-        self.limit_journal = _limit_journal
+    def __init__(self, _query, _range_year, _publication_name, _limit_journal = True):
+        self.bar_size = 0.2
+        self.bibliometric_parameter = AbstractReader(_query, _range_year, _publication_name, _limit_journal)
 
     def ShowTrendOfYearsFromKeyword(self, _your_keyword):
-        list_raw = keyword2x.get_trend_of_years_from_keyword(self.query, self.range_year, self.limit_journal, _your_keyword)
+        n_xticks = self.bibliometric_parameter.range_year[1] - self.bibliometric_parameter.range_year[0] + 1
+        list_raw = keyword2x.get_trend_of_years_from_keyword(self.bibliometric_parameter, _your_keyword)
         print(list_raw)
-
-        max_y = max([y[1] for y in list_raw]) * 1.35
-        max_y = max_y - max_y % 10
-        n_xticks = self.range_year[1] - self.range_year[0] + 1
-
+        
         fig, ax = pyplot.subplots()
         ax.cla()
-        ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(self.range_year[0]) + ' to ' + str(self.range_year[1]), y = y)
-
+        ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(self.bibliometric_parameter.range_year[0]) + ' to ' + str(self.bibliometric_parameter.range_year[1]), y = y)
         ax.bar(numpy.arange(n_xticks), 
-              [y[1] for y in list_raw], 
+              [y[1] * 100 for y in list_raw], 
               width = 0.5, 
               color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
-              label = "Weighted score of keywords in n year")
+              label = "Proportion that the keyword occupies in n year")
         ax.legend(loc='upper right')   
-        ax.set_ylim(0, max_y)
         ax.set_xticks(numpy.arange(n_xticks), [x[0] for x in list_raw])
+        ax.set_ylim(min([y[1] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1] for y in list_raw]) * (1 + self.bar_size) * 100)
+        ax.set_yticklabels(['{:,.2%}'.format(x / 100) for x in ax.get_yticks()])
         pyplot.show()
 
     def ShowTrendOfJournalsFromKeyword(self, _your_keyword, _n_journals):
-        list_raw = keyword2x.get_trend_of_journals_from_keyword(self.query, self.range_year, _n_journals, self.limit_journal, _your_keyword)
+        list_raw = keyword2x.get_trend_of_journals_from_keyword(self.bibliometric_parameter, _your_keyword, _n_journals)
         print(list_raw)
     
         max_y = max([x[1] for x in list_raw]) * 1.35
@@ -82,44 +82,8 @@ class BibliometricVisualizer:
         ax.set_xticks(numpy.arange(_n_journals), [x[0].replace(' ', '\n') for x in list_raw], fontsize = 11)
         pyplot.show()
 
-    def ShowFluctuationOfKeywords(self, _list_your_keyword, _remark_year, _end_year):
-        list_fluctuation = []
-        n = 3
-        sn = n * (n - 1) / 2
-
-        for your_keyword in tqdm(_list_your_keyword):
-            list_raw = keyword2x.get_trend_of_years_from_keyword(self.query, self.limit_journal, _remark_year - n + 1, _end_year)
-            f, g = 0, 0
-            for i in range(n):
-                f += list_raw[i][1] * (i + 1)
-                g += list_raw[-i][1] * (n - i)
-            list_fluctuation.append(round((g - f) / sn, 0))
-
-        print(list_fluctuation)
-
-        list_sorted = [(_list_your_keyword[i], list_fluctuation[i]) for i in range(len(list_fluctuation))]
-        list_sorted.sort(key = lambda x : x[1])
-
-        max_y = max([x for x in list_fluctuation]) * 1.35
-        max_y = max_y - max_y % 10
-        n_xticks = len(list_fluctuation)
-        yticks = max_y / 8 - (max_y / 8 % 10)
-
-        fig, ax = pyplot.subplots()
-        ax.cla()
-        ax.set_title('Fluctuation of keywords from ' + str(_remark_year) + ' to ' + str(_end_year), y = y)
-        ax.bar(numpy.arange(n_xticks), 
-               [x[1] for x in list_sorted], 
-               width = 0.5, 
-               color = get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
-               label = "WMA(" + str(_end_year) + ") - WMA(" + str(_remark_year) + ")\n* Weighted moving average")
-        ax.legend(loc='upper right')   
-        ax.set_ylim(0, max_y)
-        ax.set_xticks(numpy.arange(len(_list_your_keyword)), [x[0].replace(' ', '\n') for x in list_sorted], fontsize = 14)
-        pyplot.show()
-
-    def ShowWordCloudOfKeywords(self, _publication_name):
-        dict_word_count = x2keywords.get_trend_of_keywords(self.query, self.range_year, _publication_name, self.limit_journal)
+    def ShowWordCloudOfKeywords(self, _n_keywords):
+        dict_word_count = x2keywords.get_trend_of_keywords(self.bibliometric_parameter, _n_keywords)
         print(dict_word_count)
 
         from wordcloud import WordCloud
@@ -129,8 +93,8 @@ class BibliometricVisualizer:
         pyplot.axis('off')
         pyplot.show()
 
-    def ShowNetworkOfKeywords(self, _publication_name):
-        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.query, self.range_year, _publication_name, self.limit_journal)
+    def ShowNetworkOfKeywords(self, _n_keywords):
+        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.bibliometric_parameter, _n_keywords)
 
         import networkx as nx
         import operator
@@ -158,12 +122,27 @@ class BibliometricVisualizer:
 
         nx.draw(G, 
                 with_labels = True, 
-                node_size = [G.nodes[node]['nodesize'] * G.nodes[node]['nodesize'] * 2400 for node in G], 
+                node_size = [G.nodes[node]['nodesize'] * G.nodes[node]['nodesize'] * 3000 for node in G], 
                 node_color = range(len(G)),
                 width = 0.5, 
                 edge_color = "grey", 
-                alpha = 0.8,
-                font_size = 7, 
+                alpha = 1,
+                font_size = 9, 
                 font_weight = "regular")
         ax = plt.gca()
         plt.show()
+
+    def ShowBibliometrics(self):
+        list_raw = bibliometrics.get_trend_of_publication(self.bibliometric_parameter)
+        print(list_raw)
+
+        fig, ax = pyplot.subplots()
+        ax.cla()
+        ax.set_title('Number of publications/authors from ' + str(self.range_year[0]) + ' to ' + str(self.range_year[1]), y = y)
+
+        for i in range(len(list_raw) - 1):
+            ax.plot((list_raw[i][1][0], list_raw[i + 1][1][0]), 
+                     (list_raw[i][1][1], list_raw[i + 1][1][1]), 
+                     'bo-')
+
+        pyplot.show()

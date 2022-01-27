@@ -9,10 +9,10 @@ from tqdm import tqdm
 class Unigramer(Regularizer):
     def __init__(self):
         self.__nlp = spacy.load('en_core_web_sm')
-        self.__words2stop = [line.strip() for line in open("../limit/stopword.txt", 'r')]
+        self.__words2stop = [line.strip() for line in open("../stopword.txt", 'r')]
         self.__stoppos_noun_chunk = ["PRON", "DET", "ADV", "SYM", "PART", "SPACE", "PUNCT", "NUM"]
         self.__list_revert_to_plural = ["datum"]
-        self.__stopsigns = ['%', '±']
+        self.__stopsigns = ['%', '±', '©', '°', '<', '>']
         self.__list_chunk, self.__list_modifier, self.__list_unigram = [], [], []
 
         try:
@@ -43,7 +43,7 @@ class Unigramer(Regularizer):
            _unigram.split('-')[-1] not in self.__list_modifier: # ngram은 명사구, 마지막 단어가 형용사로 끝나는 구는 제외
             self.__list_unigram.append(_unigram)
     def __put_ngram_to_list(self, _ngram):
-        self.__list_unigram.append(_ngram.lower().replace(' ', '_'))
+        self.__list_unigram.append(_ngram.lower())
 
     def __get_redirected_term(self, _original_term):
         url_wiki = "https://en.wikipedia.org/wiki/"

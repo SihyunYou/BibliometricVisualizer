@@ -29,12 +29,14 @@ def get_keyword_interest(_df_abstract, _interesting_keyword):
     else: 
         return 0
 
-def get_trend_of_years_from_keyword(_bibliometric_parameter, _your_keyword):
-    df_abstract = _bibliometric_parameter.get_dataframe()
-    return [(n, get_keyword_interest(df_abstract.loc[df_abstract["PY"] == str(n)], _your_keyword)) for n in range(_bibliometric_parameter.range_year[0], _bibliometric_parameter.range_year[1] + 1)]
+def get_trend_of_years_from_keyword(_info_abstract, _your_keyword):
+    return [(n, get_keyword_interest(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["PY"] == str(n)], _your_keyword)) \
+                for n in range(_info_abstract.range_year[0], _info_abstract.range_year[1] + 1)]
 
-def get_trend_of_journals_from_keyword(_bibliometric_parameter, _your_keyword):
-    df_abstract = _bibliometric_parameter.get_dataframe()
-    return sorted([(journal, get_keyword_interest(df_abstract.loc[df_abstract["SO"] == journal], _your_keyword)) for journal in df_abstract["SO"].unique()],
-           key = lambda x: x[1],
-           reverse = True)[:10]
+def get_trend_of_journals_from_keyword(_info_abstract, _your_keyword, _n_journals, _threshold_against_distortion):
+    return sorted([(journal, 
+                    get_keyword_interest(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["SO"] == journal], _your_keyword)) \
+                    for journal in _info_abstract.df_abstract["SO"].unique()
+                    if _info_abstract.df_abstract.loc[_info_abstract.df_abstract["SO"] == journal].shape[0] >= _threshold_against_distortion],
+            key = lambda x: x[1],
+            reverse = True)[:_n_journals]

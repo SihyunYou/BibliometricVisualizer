@@ -15,12 +15,11 @@ def top_n_dict(_dict, _threshold = 100):
         del _dict[key]
     return _dict
 
-def get_trend_of_keywords(_bibliometric_parameter, _n_keywords = 50):
+def get_trend_of_keywords(_info_abstract, _n_keywords = 50):
     unigramer = Unigramer()
     dict_bow = {}
-    df_abstract = _bibliometric_parameter.get_dataframe()
 
-    for raw_abstract in tqdm([str(df_abstract.iloc[i, 11]) for i in range(df_abstract.shape[0])], desc = "BoW 생성 중(x2keywords)"):
+    for raw_abstract in tqdm([str(_info_abstract.df_abstract.iloc[i, 11]) for i in range(_info_abstract.df_abstract.shape[0])], desc = "BoW 생성 중(x2keywords)"):
         list_tokenized_unigram = unigramer.tokenize(raw_abstract)
         for unigram in list_tokenized_unigram:
             if unigram in dict_bow:
@@ -30,13 +29,12 @@ def get_trend_of_keywords(_bibliometric_parameter, _n_keywords = 50):
 
     return top_n_dict(dict_bow, _n_keywords)
 
-def get_dict_term_fair_frequency(_bibliometric_parameter, _n_keywords = 50):
+def get_dict_term_fair_frequency(_info_abstract, _n_keywords = 50):
     unigramer = Unigramer()
     dict_term_fair_frequency = {}
-    df_abstract = _bibliometric_parameter.get_dataframe()
-    list_top_keywords = get_trend_of_keywords(_bibliometric_parameter, _n_keywords).keys()
+    list_top_keywords = get_trend_of_keywords(_info_abstract, _n_keywords).keys()
 
-    for raw_abstract in tqdm([str(df_abstract.iloc[i, 11]) for i in range(df_abstract.shape[0])], desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
+    for raw_abstract in tqdm([str(_info_abstract.df_abstract.iloc[i, 11]) for i in range(_info_abstract.df_abstract.shape[0])], desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
         list_tokenized_unigram = unigramer.tokenize(raw_abstract)
         for i in range(len(list_tokenized_unigram)):
             for j in range(i + 1, len(list_tokenized_unigram)):

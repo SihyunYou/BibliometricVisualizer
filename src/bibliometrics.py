@@ -16,17 +16,16 @@ def substract_authors(_str_authors):
         if p <= 0: break
     return list_authors
 
-def get_trend_of_publication(_query, _range_year, _limit_journal):
-    df_abstract = substract_df_abstract(_query, _range_year, 'All', _limit_journal)
+def get_trend_of_publication(_info_abstract):
     dict_n_author_publication = {}
 
-    for n in range(_range_year[0], _range_year[1] + 1):
-        df = df_abstract.loc[df_abstract["PY"] == str(n)]
+    for n in range(_info_abstract.range_year[0], _info_abstract.range_year[1] + 1):
+        df = _info_abstract.df_abstract.loc[_info_abstract.df_abstract["PY"] == str(n)]
         dict_authors = {}
         for i in range(df.shape[0]):
             for author in substract_authors(str(df.iloc[i, 3])):
                 dict_authors[author] = 0
         dict_n_author_publication[n] = (len(dict_authors.keys()), df.shape[0])
 
-    return [(n, dict_n_author_publication[n]) for n in range(_range_year[0], _range_year[1] + 1)]
+    return [(n, dict_n_author_publication[n]) for n in range(_info_abstract.range_year[0], _info_abstract.range_year[1] + 1)]
 

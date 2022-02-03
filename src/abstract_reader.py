@@ -15,10 +15,6 @@ class AbstractReader:
         scopus_reader = ScopusReader(_query)
         hashed_filename = scopus_reader.get_hashed_filename()
         print(FILENAME_DATAFRAME + hashed_filename)
-        try:
-            return dict_abstract[hashed_filename]
-        except:
-            pass
 
         try:
             with open(FILENAME_DATAFRAME + hashed_filename, 'rb') as f:
@@ -42,7 +38,15 @@ class AbstractReader:
         else:
             self.df_abstract = df_raw_abstract
         self.__print_dataframe(self.df_abstract)
-        
+
+        self.resume_df = ''
+        values = self.df_abstract["PY"].value_counts().keys().tolist()
+        keys = self.df_abstract["PY"].value_counts().tolist()
+        for x in zip(values, keys):
+            print(x)
+            self.resume_df += '(\'' + x[0] + '\', ' + str(x[1]) + '), '
+        self.resume_df = self.resume_df[:-2]
+
     def __print_dataframe(self, _df):
         print(_df["PY"].value_counts())
         print(_df["SO"].value_counts().head(10))

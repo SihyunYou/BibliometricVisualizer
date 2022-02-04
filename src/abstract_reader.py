@@ -2,6 +2,8 @@ import pickle
 import pandas
 from tqdm import tqdm
 from retriever import ScopusReader
+import json
+from collections import OrderedDict
 
 FILENAME_DATAFRAME = "../df/"
 pandas.set_option('display.max_rows', 64)
@@ -39,13 +41,18 @@ class AbstractReader:
             self.df_abstract = df_raw_abstract
         self.__print_dataframe(self.df_abstract)
 
-        self.resume_df = ''
-        values = self.df_abstract["PY"].value_counts().keys().tolist()
-        keys = self.df_abstract["PY"].value_counts().tolist()
-        for x in zip(values, keys):
-            print(x)
-            self.resume_df += '(\'' + x[0] + '\', ' + str(x[1]) + '), '
-        self.resume_df = self.resume_df[:-2]
+        resume_df = OrderedDict()
+        start_year = self.df_abstract["PY"].values.tolist()[-1]
+        resume_df["start_year"] = start_year
+        end_year = self.df_abstract["PY"].values.tolist()[0]
+        resume_df["end_year"] = end_year
+        resume_df["year_frequency"] = [self.df_abstract["PY"].loc[self.df_abstract["PY"] == str(n)].shape[0] for n in range(int(start_year), int(end_year) + 1)]
+        resume_df["journal_name"] = self.df_abstract["SO"].values.tolist()
+        resume_df["journal_frequency"] = [self.df_abstract["SO"].loc[self.df_abstract["SO"] == journal].shape[0] for journal in self.df_abstract["SO"].values.tolist()]
+
+        print(json.dumps(resume_df, indent="\t"))
+        with open('../df/resume_df.json', 'w') as f:
+            json.dump(resume_df, f, indent="\t")
 
     def __print_dataframe(self, _df):
         print(_df["PY"].value_counts())

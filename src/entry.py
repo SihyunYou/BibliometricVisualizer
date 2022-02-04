@@ -21,14 +21,16 @@ while True:
     command = repr(client_socket.recv(1024).decode('utf-8', 'ignore')).replace("\\x00", '').strip('\'')
     print(command)
     code_operation = int(command.split('//')[0])
-       
-    if OP_ENTER_QUERY == code_operation:
-        Query = command.split('//')[1]
-        InfoAbstract = AbstractReader(Query, True)
+    parameter_chunk = command.split('//')[1]
 
-        client_socket.send(InfoAbstract.resume_df.encode()) 
+    if OP_ENTER_QUERY == code_operation:  
+        InfoAbstract = AbstractReader(parameter_chunk, True)
+        client_socket.send("DONE".encode()) 
         pass
     elif OP_DESIGNATE_LITTERATURE_RANGE == code_operation:
+        list_parameter = parameter_chunk.split('**')
+        InfoAbstract.Read((int(list_parameter[0]), int(list_parameter[1])), list_parameter[2])
+        client_socket.send("DONE".encode())
         pass
     elif OP_ANALYSIS == code_operation:
         pass

@@ -56,12 +56,18 @@ namespace WindowsForms
             this.label6 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.button3 = new System.Windows.Forms.Button();
+            this.radioButton3 = new System.Windows.Forms.RadioButton();
+            this.radioButton4 = new System.Windows.Forms.RadioButton();
+            this.label8 = new System.Windows.Forms.Label();
+            this.textBox4 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox1.SuspendLayout();
             this.groupBox2.SuspendLayout();
             this.groupBox3.SuspendLayout();
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.tabPage2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
@@ -72,7 +78,7 @@ namespace WindowsForms
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.richTextBox1);
-            this.groupBox1.Location = new System.Drawing.Point(21, 32);
+            this.groupBox1.Location = new System.Drawing.Point(22, 22);
             this.groupBox1.Name = "groupBox1";
             this.groupBox1.Size = new System.Drawing.Size(592, 265);
             this.groupBox1.TabIndex = 0;
@@ -133,12 +139,13 @@ namespace WindowsForms
             this.groupBox2.Controls.Add(this.comboBox2);
             this.groupBox2.Controls.Add(this.comboBox1);
             this.groupBox2.Controls.Add(this.label2);
-            this.groupBox2.Location = new System.Drawing.Point(21, 327);
+            this.groupBox2.Location = new System.Drawing.Point(22, 317);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(592, 69);
             this.groupBox2.TabIndex = 1;
             this.groupBox2.TabStop = false;
             this.groupBox2.Text = "2. 문헌 범위 제한";
+            this.groupBox2.Enabled = false;
             // 
             // label4
             // 
@@ -206,12 +213,13 @@ namespace WindowsForms
             // groupBox3
             // 
             this.groupBox3.Controls.Add(this.tabControl1);
-            this.groupBox3.Location = new System.Drawing.Point(21, 425);
+            this.groupBox3.Location = new System.Drawing.Point(22, 415);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(592, 169);
             this.groupBox3.TabIndex = 2;
             this.groupBox3.TabStop = false;
             this.groupBox3.Text = "3. 키워드 분석";
+            this.groupBox3.Enabled = false;
             // 
             // tabControl1
             // 
@@ -328,6 +336,11 @@ namespace WindowsForms
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.button3);
+            this.tabPage2.Controls.Add(this.radioButton3);
+            this.tabPage2.Controls.Add(this.radioButton4);
+            this.tabPage2.Controls.Add(this.label8);
+            this.tabPage2.Controls.Add(this.textBox4);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
             this.tabPage2.Name = "tabPage2";
             this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
@@ -336,11 +349,64 @@ namespace WindowsForms
             this.tabPage2.Text = "키워드 관계 분석";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(470, 27);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(74, 46);
+            this.button3.TabIndex = 13;
+            this.button3.Text = "분석";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
+            // radioButton3
+            // 
+            this.radioButton3.AutoSize = true;
+            this.radioButton3.Location = new System.Drawing.Point(330, 59);
+            this.radioButton3.Name = "radioButton3";
+            this.radioButton3.Size = new System.Drawing.Size(119, 16);
+            this.radioButton3.TabIndex = 12;
+            this.radioButton3.TabStop = true;
+            this.radioButton3.Text = "단어 간 빈도 분석";
+            this.radioButton3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton4
+            // 
+            this.radioButton4.AutoSize = true;
+            this.radioButton4.Checked = true;
+            this.radioButton4.Location = new System.Drawing.Point(330, 25);
+            this.radioButton4.Name = "radioButton4";
+            this.radioButton4.Size = new System.Drawing.Size(119, 16);
+            this.radioButton4.TabIndex = 11;
+            this.radioButton4.TabStop = true;
+            this.radioButton4.Text = "단어 간 관계 분석";
+            this.radioButton4.UseVisualStyleBackColor = true;
+            this.radioButton4.CheckedChanged += new System.EventHandler(this.radioButton4_CheckedChanged);
+            // 
+            // label8
+            // 
+            this.label8.AutoSize = true;
+            this.label8.Location = new System.Drawing.Point(9, 44);
+            this.label8.Name = "label8";
+            this.label8.Size = new System.Drawing.Size(113, 12);
+            this.label8.TabIndex = 5;
+            this.label8.Text = "최대 관찰 단어 개수";
+            // 
+            // textBox4
+            // 
+            this.textBox4.Location = new System.Drawing.Point(128, 39);
+            this.textBox4.Name = "textBox4";
+            this.textBox4.Size = new System.Drawing.Size(184, 21);
+            this.textBox4.TabIndex = 4;
+            this.textBox4.Text = "50";
+            // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(641, 12);
+            this.pictureBox1.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
+            this.pictureBox1.Location = new System.Drawing.Point(640, 29);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(704, 629);
+            this.pictureBox1.Size = new System.Drawing.Size(1005, 555);
+            this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.StretchImage;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
@@ -348,12 +414,13 @@ namespace WindowsForms
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(1357, 663);
+            this.ClientSize = new System.Drawing.Size(1667, 603);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Name = "Form1";
+            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Article Keywords Visualizer";
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
@@ -363,8 +430,11 @@ namespace WindowsForms
             this.tabControl1.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
             this.tabPage1.PerformLayout();
+            this.tabPage2.ResumeLayout(false);
+            this.tabPage2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -398,6 +468,11 @@ namespace WindowsForms
         private System.Windows.Forms.TextBox textBox2;
         private System.Windows.Forms.Button button4;
         private System.Windows.Forms.TextBox textBox3;
+        private System.Windows.Forms.Button button3;
+        private System.Windows.Forms.RadioButton radioButton3;
+        private System.Windows.Forms.RadioButton radioButton4;
+        private System.Windows.Forms.Label label8;
+        private System.Windows.Forms.TextBox textBox4;
     }
 }
 

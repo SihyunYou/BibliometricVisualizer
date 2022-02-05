@@ -10,10 +10,11 @@ import x2keywords
 import bibliometrics
 
 class BibliometricVisualizer:
-    def __init__(self, _info_abstract):
+    def __init__(self, _info_abstract, _showed = False):
         self.width_title = 1.04
         self.bar_size = 0.2
         self.info_abstract = _info_abstract
+        self.showed = _showed
 
         pyplot.style.use("default")
         pylab.rcParams.update({
@@ -57,7 +58,11 @@ class BibliometricVisualizer:
         ax.set_xticks(numpy.arange(n_xticks), [x[0] for x in list_raw])
         ax.set_ylim(min([y[1] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1] for y in list_raw]) * (1 + self.bar_size) * 100)
         ax.set_yticklabels(['{:,.2%}'.format(x / 100) for x in ax.get_yticks()])
-        pyplot.show()
+
+        if self.showed:
+            pyplot.show()
+        else:
+            pyplot.savefig("../pic/1.png", dpi = 300)
 
     def ShowTrendOfJournalsFromKeyword(self, _your_keyword, _n_journals, _threshold_against_distortion):
         list_raw = keyword2x.get_trend_of_journals_from_keyword(self.info_abstract, _your_keyword, _n_journals, _threshold_against_distortion)
@@ -76,7 +81,11 @@ class BibliometricVisualizer:
         ax.set_xticks(numpy.arange(n_xticks), [x[0].replace(' ', '\n') for x in list_raw])
         ax.set_ylim(min([y[1] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1] for y in list_raw]) * (1 + self.bar_size) * 100)
         ax.set_yticklabels(['{:,.2%}'.format(x / 100) for x in ax.get_yticks()])
-        pyplot.show()
+        
+        if self.showed:
+            pyplot.show()
+        else:
+            pyplot.savefig("../pic/2.png", dpi = 300)
 
     def ShowWordCloudOfKeywords(self, _n_keywords):
         dict_word_count = x2keywords.get_trend_of_keywords(self.info_abstract, _n_keywords)
@@ -87,7 +96,11 @@ class BibliometricVisualizer:
         pyplot.figure(figsize = (15, 15))
         pyplot.imshow(word_cloud)
         pyplot.axis('off')
-        pyplot.show()
+        
+        if self.showed:
+            pyplot.show()
+        else:
+            pyplot.savefig("../pic/3.png", dpi = 300)
 
     def ShowNetworkOfKeywords(self, _n_keywords):
         dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.info_abstract, _n_keywords)
@@ -126,7 +139,11 @@ class BibliometricVisualizer:
                 font_size = 9, 
                 font_weight = "regular")
         ax = plt.gca()
-        plt.show()
+        
+        if self.showed:
+            pyplot.show()
+        else:
+            pyplot.savefig("../pic/4.png", dpi = 300)
 
     def ShowBibliometrics(self):
         list_raw = bibliometrics.get_trend_of_publication(self.info_abstract)
@@ -141,4 +158,8 @@ class BibliometricVisualizer:
             ax.plot((list_raw[i][1][0], list_raw[i + 1][1][0]), (list_raw[i][1][1], list_raw[i + 1][1][1]), 
                      'o-',
                      color = list_palette[i])
-        pyplot.show()
+        
+        if self.showed:
+            pyplot.show()
+        else:
+            pyplot.savefig("../pic/5.png", dpi = 300)

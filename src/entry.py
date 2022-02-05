@@ -30,10 +30,23 @@ while True:
     elif OP_DESIGNATE_LITTERATURE_RANGE == code_operation:
         list_parameter = parameter_chunk.split('**')
         InfoAbstract.Read((int(list_parameter[0]), int(list_parameter[1])), list_parameter[2])
+        Visualizer = BibliometricVisualizer(InfoAbstract)
         client_socket.send("DONE".encode())
         pass
     elif OP_ANALYSIS == code_operation:
-        pass
+        list_parameter = parameter_chunk.split('**')
+        code_operation_detail = int(list_parameter[0])
+        if code_operation_detail == 1:
+            Visualizer.ShowTrendOfYearsFromKeyword(list_parameter[1])
+        elif code_operation_detail == 2:
+            Visualizer.ShowTrendOfJournalsFromKeyword(list_parameter[1], int(list_parameter[2]), int(list_parameter[3]))
+        elif code_operation_detail == 3:
+            Visualizer.ShowWordCloudOfKeywords(int(list_parameter[1]))
+        elif code_operation_detail == 4:
+            Visualizer.ShowNetworkOfKeywords(int(list_parameter[1]))
+        elif code_operation_detail == 5:
+            Visualizer.ShowBibliometrics()
+        client_socket.send("DONE".encode())
     else:
         print("잘못된 operation 코드 수신")
 

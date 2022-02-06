@@ -47,8 +47,8 @@ class AbstractReader:
         end_year = self.df_abstract["PY"].values.tolist()[0]
         resume_df["end_year"] = end_year
         resume_df["year_frequency"] = [self.df_abstract["PY"].loc[self.df_abstract["PY"] == str(n)].shape[0] for n in range(int(start_year), int(end_year) + 1)]
-        resume_df["journal_name"] = self.df_abstract["SO"].values.tolist()
-        resume_df["journal_frequency"] = [self.df_abstract["SO"].loc[self.df_abstract["SO"] == journal].shape[0] for journal in self.df_abstract["SO"].values.tolist()]
+        resume_df["journal_name"] = self.df_abstract["SO"].unique().tolist()
+        resume_df["journal_frequency"] = [self.df_abstract["SO"].loc[self.df_abstract["SO"] == journal].shape[0] for journal in self.df_abstract["SO"].unique().tolist()]
 
         print(json.dumps(resume_df, indent="\t"))
         with open('../df/resume_df.json', 'w') as f:

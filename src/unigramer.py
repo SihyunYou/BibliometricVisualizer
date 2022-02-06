@@ -5,9 +5,11 @@ import bs4
 import pickle
 import re
 from tqdm import tqdm
+import os 
 
 class Unigramer(Regularizer):
     def __init__(self):
+        #os.system("python -m spacy download en")
         self.__nlp = spacy.load('en_core_web_sm')
         self.__words2stop = [line.strip() for line in open("../stopword.txt", 'r')]
         self.__stoppos_noun_chunk = ["PRON", "DET", "ADV", "SYM", "PART", "SPACE", "PUNCT", "NUM"]

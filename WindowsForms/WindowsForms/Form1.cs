@@ -57,13 +57,15 @@ namespace WindowsForms
         {
             this.groupBox2.Enabled = false;
             this.groupBox3.Enabled = false;
+            this.dataGridView1.Rows.Clear();
+            this.dataGridView2.Rows.Clear();
 
             string text = "1//" + richTextBox1.Text;
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if(data != "Done")
+            if(data != "DONE")
             {
                 ;
             }
@@ -76,14 +78,26 @@ namespace WindowsForms
             }
 
             var jObject = JObject.Parse(json);
-            this.richTextBox2.Text = jObject.ToString();
             int start_year = Convert.ToInt32(jObject["start_year"].ToString());
             int end_year = Convert.ToInt32(jObject["end_year"].ToString());
+            JToken jToken = jObject["year_frequency"];
             
+            for (n = start_year; n <= end_year; n++)
+            {
+                string[] rows = { (end_year + start_year - n).ToString(), jToken[end_year - n].ToString() };
+                dataGridView1.Rows.Add(rows);
+            }
+            
+            for(n = 0; n < jObject["journal_name"].Count(); n++)
+            {
+                string[] rows = { jObject["journal_name"][n].ToString(), jObject["journal_frequency"][n].ToString() };
+                dataGridView2.Rows.Add(rows);
+            }
+
             var ArrayYear = Enumerable.Range(start_year, end_year - start_year + 1).Select(x => x.ToString()).ToArray();
             this.comboBox1.Items.AddRange(ArrayYear);
             this.comboBox2.Items.AddRange(ArrayYear);
-            //JToken jToken = jObject["year_frequency"];
+            
 
             this.comboBox3.Items.AddRange(jObject["journal_name"].ToObject<string[]>());
             this.groupBox2.Enabled = true;
@@ -92,18 +106,12 @@ namespace WindowsForms
         private void button2_Click(object sender, EventArgs e)
         {
             this.groupBox3.Enabled = false;
-
-            string t = this.comboBox3.Text;
-            if (this.comboBox3.Text == "모든 저널")
-            {
-                t = "All";
-            }
-            string text = "2//" + this.comboBox1.Text + "**" + this.comboBox2.Text + "**" + t;
+            string text = "2//" + this.comboBox1.Text + "**" + this.comboBox2.Text + "**" + this.comboBox3.Text;
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if (data != "Done")
+            if (data != "DONE")
             {
                 ;
             }
@@ -124,12 +132,14 @@ namespace WindowsForms
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if (data != "Done")
+            if (data != "DONE")
             {
                 ;
             }
-
-            pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton1.Checked ? "1.png" : "2.png"));
+            else
+            {
+                pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton1.Checked ? "1.png" : "2.png"));
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -168,25 +178,26 @@ namespace WindowsForms
         private void button3_Click(object sender, EventArgs e)
         {
             string text = "3//";
-            if (radioButton3.Checked)
-            {
-                text += "3**";
-            }
-            else
-            {
-                text += "4**";
-            }
+            text += radioButton3.Checked ? "3**" : "4**";
             text += this.textBox4.Text;
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if (data != "Done")
+            if (data != "DONE")
             {
                 ;
             }
-            
-            pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton1.Checked ? "3.png" : "4.png"));
+            else
+            {
+                pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton3.Checked ? "3.png" : "4.png"));
+            }
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+            this.groupBox2.Enabled = false;
+            this.groupBox3.Enabled = false;
         }
     }
 }

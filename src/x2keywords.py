@@ -5,19 +5,6 @@ from abstract_reader import *
 from unigramer import Unigramer
 from tqdm.auto import tqdm
 
-def top_n_dict(_dict, _threshold = 100):
-    if len(_dict) <= _threshold:
-        _threshold = len(_dict) - 1
-
-    value = sorted(_dict.values(), reverse = True)[_threshold]
-    list_key_delete = []
-    for key in _dict:
-        if _dict[key] < value:
-            list_key_delete.append(key)
-    for key in list_key_delete:
-        del _dict[key]
-    return _dict
-
 def get_trend_of_keywords(_info_abstract, _n_keywords = 50):
     unigramer = Unigramer()
     dict_bow = {}

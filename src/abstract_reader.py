@@ -8,6 +8,19 @@ from collections import OrderedDict
 FILENAME_DATAFRAME = "../df/"
 pandas.set_option('display.max_rows', 64)
 
+def top_n_dict(_dict, _threshold = 100):
+    if len(_dict) <= _threshold:
+        _threshold = len(_dict) - 1
+
+    value = sorted(_dict.values(), reverse = True)[_threshold]
+    list_key_delete = []
+    for key in _dict:
+        if _dict[key] < value:
+            list_key_delete.append(key)
+    for key in list_key_delete:
+        del _dict[key]
+    return _dict
+
 class AbstractReader:
     def __init__(self, _query, _limit_journal = True):
         self.query = _query
@@ -38,17 +51,26 @@ class AbstractReader:
                     if article_issn in list_good_journal_issn:
                         self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.loc[i]
         else:
-            self.df_abstract = df_raw_abstract
-        self.__print_dataframe(self.df_abstract)
+            self.df_abstract = pandas.DataFrame(columns = df_raw_abstract.columns)
+            for i in tqdm(range(df_raw_abstract.shape[0]), desc = "데이터프레임 추출 중"):
+                if 'None' != str(df_raw_abstract["SN"][i]):
+                    self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.loc[i]
 
+        self.__print_dataframe(self.df_abstract)
         resume_df = OrderedDict()
         start_year = self.df_abstract["PY"].values.tolist()[-1]
         resume_df["start_year"] = start_year
         end_year = self.df_abstract["PY"].values.tolist()[0]
         resume_df["end_year"] = end_year
         resume_df["year_frequency"] = [self.df_abstract["PY"].loc[self.df_abstract["PY"] == str(n)].shape[0] for n in range(int(start_year), int(end_year) + 1)]
-        resume_df["journal_name"] = self.df_abstract["SO"].unique().tolist()
-        resume_df["journal_frequency"] = [self.df_abstract["SO"].loc[self.df_abstract["SO"] == journal].shape[0] for journal in self.df_abstract["SO"].unique().tolist()]
+
+        dict_journal_frequency = dict(zip(
+            [journal for journal in pandas.unique(self.df_abstract["SO"])], 
+            [self.df_abstract["SO"].loc[self.df_abstract["SO"] == journal].shape[0] for journal in pandas.unique(self.df_abstract["SO"])]))
+        list_journal_frequency = top_n_dict(dict_journal_frequency, 30).items()
+        list_journal_frequency = sorted(list_journal_frequency, key=lambda item: item[1], reverse = True)
+        resume_df["journal_name"] = [x[0] for x in list_journal_frequency]
+        resume_df["journal_frequency"] = [x[1] for x in list_journal_frequency]
 
         print(json.dumps(resume_df, indent="\t"))
         with open('../df/resume_df.json', 'w') as f:

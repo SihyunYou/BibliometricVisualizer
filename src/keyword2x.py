@@ -20,9 +20,10 @@ def get_keyword_interest(_df_abstract, _interesting_keyword):
                     if hierarchizer.is_this_keyword_interesting(' '.join(list_tokenized_unigram[k:k+j])):
                         frequency_keyword += 1
         else:
-             for k in range(len(list_tokenized_unigram) - _interesting_keyword.count(' ') + 1):
-                 if ' '.join(list_tokenized_unigram[k:k+j]) == _interesting_keyword:
-                     frequency_keyword += 1
+            for j in range(1, _interesting_keyword.count(' ') + 1):
+                for k in range(len(list_tokenized_unigram) - j):
+                    if ' '.join(list_tokenized_unigram[k:k+j]) == _interesting_keyword:
+                        frequency_keyword += 1
 
     if frequency_integrity > 0:
         return frequency_keyword / frequency_integrity

@@ -23,9 +23,11 @@ while True:
     code_operation = int(command.split('//')[0])
     parameter_chunk = command.split('//')[1]
 
-    if OP_ENTER_QUERY == code_operation:  
-        InfoAbstract = AbstractReader(parameter_chunk, True)
-        client_socket.send("DONE".encode()) 
+    if OP_ENTER_QUERY == code_operation:
+        list_parameter = parameter_chunk.split('**')
+        InfoAbstract = AbstractReader(list_parameter[0],
+                                            True if list_parameter[1] == "1" else False)
+        client_socket.send("DONE".encode())
         pass
     elif OP_DESIGNATE_LITTERATURE_RANGE == code_operation:
         list_parameter = parameter_chunk.split('**')

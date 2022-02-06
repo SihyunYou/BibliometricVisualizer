@@ -29,7 +29,10 @@ namespace WindowsForms
         /// </summary>
         private void InitializeComponent()
         {
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
+            this.button5 = new System.Windows.Forms.Button();
+            this.dataGridView3 = new System.Windows.Forms.DataGridView();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -67,7 +70,11 @@ namespace WindowsForms
             this.textBox4 = new System.Windows.Forms.TextBox();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.groupBox2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
@@ -80,33 +87,61 @@ namespace WindowsForms
             // 
             // groupBox1
             // 
+            this.groupBox1.Controls.Add(this.button5);
+            this.groupBox1.Controls.Add(this.dataGridView3);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.button1);
             this.groupBox1.Controls.Add(this.richTextBox1);
             this.groupBox1.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
             this.groupBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox1.Location = new System.Drawing.Point(22, 22);
+            this.groupBox1.Location = new System.Drawing.Point(22, 17);
             this.groupBox1.Name = "groupBox1";
-            this.groupBox1.Size = new System.Drawing.Size(592, 115);
+            this.groupBox1.Size = new System.Drawing.Size(592, 257);
             this.groupBox1.TabIndex = 0;
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "1. Enter your query";
             // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(325, 226);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(162, 23);
+            this.button5.TabIndex = 4;
+            this.button5.Text = "Helper creating a query";
+            this.button5.UseVisualStyleBackColor = true;
+            // 
+            // dataGridView3
+            // 
+            this.dataGridView3.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            this.dataGridView3.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
+            this.Column4,
+            this.Column3,
+            this.Column5});
+            this.dataGridView3.Location = new System.Drawing.Point(17, 104);
+            this.dataGridView3.Name = "dataGridView3";
+            this.dataGridView3.RowHeadersVisible = false;
+            this.dataGridView3.RowTemplate.Height = 23;
+            this.dataGridView3.Size = new System.Drawing.Size(558, 114);
+            this.dataGridView3.TabIndex = 3;
+            this.dataGridView3.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView3_CellContentClick);
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
-            this.checkBox1.Location = new System.Drawing.Point(477, 75);
+            this.checkBox1.Checked = true;
+            this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
+            this.checkBox1.Location = new System.Drawing.Point(22, 229);
             this.checkBox1.Name = "checkBox1";
-            this.checkBox1.Size = new System.Drawing.Size(104, 34);
+            this.checkBox1.Size = new System.Drawing.Size(252, 19);
             this.checkBox1.TabIndex = 2;
-            this.checkBox1.Text = "Limit journals\nby IF(top 20%)";
+            this.checkBox1.Text = "Limit journals by Impact Factor (Top 20%)";
             this.checkBox1.UseVisualStyleBackColor = true;
             // 
             // button1
             // 
-            this.button1.Location = new System.Drawing.Point(477, 27);
+            this.button1.Location = new System.Drawing.Point(497, 226);
             this.button1.Name = "button1";
-            this.button1.Size = new System.Drawing.Size(98, 40);
+            this.button1.Size = new System.Drawing.Size(78, 23);
             this.button1.TabIndex = 1;
             this.button1.Text = "Retrieve";
             this.button1.UseVisualStyleBackColor = true;
@@ -114,9 +149,10 @@ namespace WindowsForms
             // 
             // richTextBox1
             // 
+            this.richTextBox1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.richTextBox1.Location = new System.Drawing.Point(17, 26);
             this.richTextBox1.Name = "richTextBox1";
-            this.richTextBox1.Size = new System.Drawing.Size(445, 76);
+            this.richTextBox1.Size = new System.Drawing.Size(558, 69);
             this.richTextBox1.TabIndex = 0;
             this.richTextBox1.Text = "";
             // 
@@ -133,7 +169,7 @@ namespace WindowsForms
             this.groupBox2.Controls.Add(this.label2);
             this.groupBox2.Enabled = false;
             this.groupBox2.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox2.Location = new System.Drawing.Point(22, 160);
+            this.groupBox2.Location = new System.Drawing.Point(22, 294);
             this.groupBox2.Name = "groupBox2";
             this.groupBox2.Size = new System.Drawing.Size(592, 232);
             this.groupBox2.TabIndex = 1;
@@ -259,7 +295,7 @@ namespace WindowsForms
             this.groupBox3.Controls.Add(this.tabControl1);
             this.groupBox3.Enabled = false;
             this.groupBox3.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.groupBox3.Location = new System.Drawing.Point(22, 415);
+            this.groupBox3.Location = new System.Drawing.Point(22, 547);
             this.groupBox3.Name = "groupBox3";
             this.groupBox3.Size = new System.Drawing.Size(592, 169);
             this.groupBox3.TabIndex = 2;
@@ -451,38 +487,64 @@ namespace WindowsForms
             // 
             // pictureBox1
             // 
-            this.pictureBox1.Location = new System.Drawing.Point(642, 30);
+            this.pictureBox1.Location = new System.Drawing.Point(642, 28);
             this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(1000, 552);
+            this.pictureBox1.Size = new System.Drawing.Size(1000, 682);
             this.pictureBox1.SizeMode = System.Windows.Forms.PictureBoxSizeMode.Zoom;
             this.pictureBox1.TabIndex = 3;
             this.pictureBox1.TabStop = false;
             // 
             // groupBox4
             // 
-            this.groupBox4.Location = new System.Drawing.Point(638, 22);
+            this.groupBox4.Location = new System.Drawing.Point(638, 17);
             this.groupBox4.Name = "groupBox4";
-            this.groupBox4.Size = new System.Drawing.Size(1006, 562);
+            this.groupBox4.Size = new System.Drawing.Size(1006, 699);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
+            // 
+            // Column4
+            // 
+            dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Column4.DefaultCellStyle = dataGridViewCellStyle1;
+            this.Column4.HeaderText = "Query";
+            this.Column4.Name = "Column4";
+            this.Column4.ReadOnly = true;
+            this.Column4.Width = 420;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Delete";
+            this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Column3.Width = 65;
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Apply";
+            this.Column5.Name = "Column5";
+            this.Column5.Width = 65;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.BackColor = System.Drawing.Color.White;
-            this.ClientSize = new System.Drawing.Size(1667, 603);
+            this.ClientSize = new System.Drawing.Size(1667, 729);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.groupBox3);
             this.Controls.Add(this.groupBox2);
             this.Controls.Add(this.groupBox1);
             this.Controls.Add(this.groupBox4);
             this.Name = "Form1";
+            this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Article Keywords Visualizer";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
             this.groupBox1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).EndInit();
             this.groupBox2.ResumeLayout(false);
             this.groupBox2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).EndInit();
@@ -538,6 +600,11 @@ namespace WindowsForms
         private System.Windows.Forms.DataGridViewTextBoxColumn Column1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.GroupBox groupBox4;
+        private System.Windows.Forms.DataGridView dataGridView3;
+        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
+        private System.Windows.Forms.DataGridViewButtonColumn Column3;
+        private System.Windows.Forms.DataGridViewButtonColumn Column5;
     }
 }
 

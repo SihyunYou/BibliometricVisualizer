@@ -29,10 +29,13 @@ namespace WindowsForms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle1 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
-            this.button5 = new System.Windows.Forms.Button();
+            this.label1 = new System.Windows.Forms.Label();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
+            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
+            this.Column3 = new System.Windows.Forms.DataGridViewButtonColumn();
+            this.Column5 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.checkBox1 = new System.Windows.Forms.CheckBox();
             this.button1 = new System.Windows.Forms.Button();
             this.richTextBox1 = new System.Windows.Forms.RichTextBox();
@@ -68,11 +71,11 @@ namespace WindowsForms
             this.radioButton4 = new System.Windows.Forms.RadioButton();
             this.label8 = new System.Windows.Forms.Label();
             this.textBox4 = new System.Windows.Forms.TextBox();
+            this.tabPage3 = new System.Windows.Forms.TabPage();
+            this.radioButton5 = new System.Windows.Forms.RadioButton();
+            this.button5 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
-            this.Column4 = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.Column3 = new System.Windows.Forms.DataGridViewButtonColumn();
-            this.Column5 = new System.Windows.Forms.DataGridViewButtonColumn();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -82,12 +85,13 @@ namespace WindowsForms
             this.tabControl1.SuspendLayout();
             this.tabPage1.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             this.SuspendLayout();
             // 
             // groupBox1
             // 
-            this.groupBox1.Controls.Add(this.button5);
+            this.groupBox1.Controls.Add(this.label1);
             this.groupBox1.Controls.Add(this.dataGridView3);
             this.groupBox1.Controls.Add(this.checkBox1);
             this.groupBox1.Controls.Add(this.button1);
@@ -101,14 +105,14 @@ namespace WindowsForms
             this.groupBox1.TabStop = false;
             this.groupBox1.Text = "1. Enter your query";
             // 
-            // button5
+            // label1
             // 
-            this.button5.Location = new System.Drawing.Point(325, 226);
-            this.button5.Name = "button5";
-            this.button5.Size = new System.Drawing.Size(162, 23);
-            this.button5.TabIndex = 4;
-            this.button5.Text = "Helper creating a query";
-            this.button5.UseVisualStyleBackColor = true;
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(17, 229);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(115, 15);
+            this.label1.TabIndex = 4;
+            this.label1.Text = "0 literature retrieved";
             // 
             // dataGridView3
             // 
@@ -125,12 +129,34 @@ namespace WindowsForms
             this.dataGridView3.TabIndex = 3;
             this.dataGridView3.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dataGridView3_CellContentClick);
             // 
+            // Column4
+            // 
+            dataGridViewCellStyle3.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Column4.DefaultCellStyle = dataGridViewCellStyle3;
+            this.Column4.HeaderText = "Query";
+            this.Column4.Name = "Column4";
+            this.Column4.Width = 455;
+            // 
+            // Column3
+            // 
+            this.Column3.HeaderText = "Delete";
+            this.Column3.Name = "Column3";
+            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
+            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
+            this.Column3.Width = 50;
+            // 
+            // Column5
+            // 
+            this.Column5.HeaderText = "Apply";
+            this.Column5.Name = "Column5";
+            this.Column5.Width = 50;
+            // 
             // checkBox1
             // 
             this.checkBox1.AutoSize = true;
             this.checkBox1.Checked = true;
             this.checkBox1.CheckState = System.Windows.Forms.CheckState.Checked;
-            this.checkBox1.Location = new System.Drawing.Point(22, 229);
+            this.checkBox1.Location = new System.Drawing.Point(238, 228);
             this.checkBox1.Name = "checkBox1";
             this.checkBox1.Size = new System.Drawing.Size(252, 19);
             this.checkBox1.TabIndex = 2;
@@ -249,7 +275,7 @@ namespace WindowsForms
             // 
             this.comboBox3.FormattingEnabled = true;
             this.comboBox3.Items.AddRange(new object[] {
-            "모든 저널"});
+            "All"});
             this.comboBox3.Location = new System.Drawing.Point(325, 192);
             this.comboBox3.Name = "comboBox3";
             this.comboBox3.Size = new System.Drawing.Size(171, 23);
@@ -306,6 +332,7 @@ namespace WindowsForms
             // 
             this.tabControl1.Controls.Add(this.tabPage1);
             this.tabControl1.Controls.Add(this.tabPage2);
+            this.tabControl1.Controls.Add(this.tabPage3);
             this.tabControl1.Font = new System.Drawing.Font("Arial", 9F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
             this.tabControl1.Location = new System.Drawing.Point(11, 26);
             this.tabControl1.Name = "tabControl1";
@@ -485,6 +512,40 @@ namespace WindowsForms
             this.textBox4.TabIndex = 4;
             this.textBox4.Text = "50";
             // 
+            // tabPage3
+            // 
+            this.tabPage3.Controls.Add(this.radioButton5);
+            this.tabPage3.Controls.Add(this.button5);
+            this.tabPage3.Location = new System.Drawing.Point(4, 24);
+            this.tabPage3.Name = "tabPage3";
+            this.tabPage3.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage3.Size = new System.Drawing.Size(563, 99);
+            this.tabPage3.TabIndex = 2;
+            this.tabPage3.Text = "General";
+            this.tabPage3.UseVisualStyleBackColor = true;
+            // 
+            // radioButton5
+            // 
+            this.radioButton5.AutoSize = true;
+            this.radioButton5.Checked = true;
+            this.radioButton5.Location = new System.Drawing.Point(94, 40);
+            this.radioButton5.Name = "radioButton5";
+            this.radioButton5.Size = new System.Drawing.Size(292, 19);
+            this.radioButton5.TabIndex = 15;
+            this.radioButton5.TabStop = true;
+            this.radioButton5.Text = "The number of publications compared to authors";
+            this.radioButton5.UseVisualStyleBackColor = true;
+            // 
+            // button5
+            // 
+            this.button5.Location = new System.Drawing.Point(398, 26);
+            this.button5.Name = "button5";
+            this.button5.Size = new System.Drawing.Size(68, 46);
+            this.button5.TabIndex = 14;
+            this.button5.Text = "Analyzer";
+            this.button5.UseVisualStyleBackColor = true;
+            this.button5.Click += new System.EventHandler(this.button5_Click);
+            // 
             // pictureBox1
             // 
             this.pictureBox1.Location = new System.Drawing.Point(642, 28);
@@ -502,29 +563,6 @@ namespace WindowsForms
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
             // 
-            // Column4
-            // 
-            dataGridViewCellStyle1.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Column4.DefaultCellStyle = dataGridViewCellStyle1;
-            this.Column4.HeaderText = "Query";
-            this.Column4.Name = "Column4";
-            this.Column4.ReadOnly = true;
-            this.Column4.Width = 420;
-            // 
-            // Column3
-            // 
-            this.Column3.HeaderText = "Delete";
-            this.Column3.Name = "Column3";
-            this.Column3.Resizable = System.Windows.Forms.DataGridViewTriState.True;
-            this.Column3.SortMode = System.Windows.Forms.DataGridViewColumnSortMode.Automatic;
-            this.Column3.Width = 65;
-            // 
-            // Column5
-            // 
-            this.Column5.HeaderText = "Apply";
-            this.Column5.Name = "Column5";
-            this.Column5.Width = 65;
-            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 12F);
@@ -539,7 +577,7 @@ namespace WindowsForms
             this.Name = "Form1";
             this.ShowIcon = false;
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Article Keywords Visualizer";
+            this.Text = "Bibliometric Visualizer";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form1_FormClosing);
             this.Load += new System.EventHandler(this.Form1_Load);
             this.groupBox1.ResumeLayout(false);
@@ -555,6 +593,8 @@ namespace WindowsForms
             this.tabPage1.PerformLayout();
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.tabPage3.ResumeLayout(false);
+            this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
             this.ResumeLayout(false);
 
@@ -601,10 +641,13 @@ namespace WindowsForms
         private System.Windows.Forms.DataGridViewTextBoxColumn Column2;
         private System.Windows.Forms.GroupBox groupBox4;
         private System.Windows.Forms.DataGridView dataGridView3;
-        private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label1;
         private System.Windows.Forms.DataGridViewTextBoxColumn Column4;
         private System.Windows.Forms.DataGridViewButtonColumn Column3;
         private System.Windows.Forms.DataGridViewButtonColumn Column5;
+        private System.Windows.Forms.TabPage tabPage3;
+        private System.Windows.Forms.RadioButton radioButton5;
+        private System.Windows.Forms.Button button5;
     }
 }
 

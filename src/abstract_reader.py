@@ -5,7 +5,7 @@ from retriever import ScopusReader
 import json
 from collections import OrderedDict
 
-FILENAME_DATAFRAME = "../df/"
+FILENAME_DATAFRAME = "df/"
 pandas.set_option('display.max_rows', 64)
 
 def top_n_dict(_dict, _threshold = 100):
@@ -58,6 +58,7 @@ class AbstractReader:
 
         self.__print_dataframe(self.df_abstract)
         resume_df = OrderedDict()
+        resume_df["len"] = self.df_abstract.shape[0]
         start_year = self.df_abstract["PY"].values.tolist()[-1]
         resume_df["start_year"] = start_year
         end_year = self.df_abstract["PY"].values.tolist()[0]
@@ -73,7 +74,7 @@ class AbstractReader:
         resume_df["journal_frequency"] = [x[1] for x in list_journal_frequency]
 
         print(json.dumps(resume_df, indent="\t"))
-        with open('../df/resume_df.json', 'w') as f:
+        with open(FILENAME_DATAFRAME + 'resume_df.json', 'w') as f:
             json.dump(resume_df, f, indent="\t")
 
     def __print_dataframe(self, _df):

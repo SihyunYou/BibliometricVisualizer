@@ -11,14 +11,14 @@ class Unigramer(Regularizer):
     def __init__(self):
         #os.system("python -m spacy download en")
         self.__nlp = spacy.load('en_core_web_sm')
-        self.__words2stop = [line.strip() for line in open("../stopword.txt", 'r')]
+        self.__words2stop = [line.strip() for line in open("stopword.txt", 'r')]
         self.__stoppos_noun_chunk = ["PRON", "DET", "ADV", "SYM", "PART", "SPACE", "PUNCT", "NUM"]
         self.__list_revert_to_plural = ["datum"]
         self.__stopsigns = ['%', '±', '©', '°', '<', '>']
         self.__list_chunk, self.__list_modifier, self.__list_unigram = [], [], []
 
         try:
-            with open("../corpus_redirection.pickle","rb") as pf:
+            with open("corpus_redirection.pickle","rb") as pf:
                 self.__dict_corpus_redirection = pickle.load(pf)
         except:
             print("IL N'Y A PAS DE FICHE PICKLE DE CORPUS_REDIRECTION...")
@@ -145,7 +145,7 @@ class Unigramer(Regularizer):
                     for token in list_token:
                         self.__put_unigram_to_list(token)
 
-        with open("../corpus_redirection.pickle","wb") as pf:
+        with open("corpus_redirection.pickle","wb") as pf:
             pickle.dump(self.__dict_corpus_redirection, pf)
 
         return self.__list_unigram

@@ -3,6 +3,7 @@
 import numpy
 import matplotlib.pyplot as pyplot
 import matplotlib.pylab as pylab
+from datetime import datetime
 
 from abstract_reader import AbstractReader
 import keyword2x
@@ -15,6 +16,7 @@ class BibliometricVisualizer:
         self.bar_size = 0.2
         self.info_abstract = _info_abstract
         self.showed = _showed
+        self.filename = ''
 
         pyplot.style.use("default")
         pylab.rcParams.update({
@@ -62,7 +64,9 @@ class BibliometricVisualizer:
         if self.showed:
             pyplot.show()
         else:
-            pyplot.savefig("../pic/1.png", dpi = 300)
+            self.filename = datetime.today().strftime("%Y%m%d%H%M%S") + ".png"
+            pyplot.savefig("pic/" + self.filename, dpi = 300)
+        pyplot.cla()
 
     def ShowTrendOfJournalsFromKeyword(self, _your_keyword, _n_journals, _threshold_against_distortion):
         list_raw = keyword2x.get_trend_of_journals_from_keyword(self.info_abstract, _your_keyword, _n_journals, _threshold_against_distortion)
@@ -85,7 +89,9 @@ class BibliometricVisualizer:
         if self.showed:
             pyplot.show()
         else:
-            pyplot.savefig("../pic/2.png", dpi = 300)
+            self.filename = datetime.today().strftime("%Y%m%d%H%M%S") + ".png"
+            pyplot.savefig("pic/" + self.filename, dpi = 300)
+        pyplot.cla()
 
     def ShowWordCloudOfKeywords(self, _n_keywords):
         dict_word_count = x2keywords.get_trend_of_keywords(self.info_abstract, _n_keywords)
@@ -100,7 +106,9 @@ class BibliometricVisualizer:
         if self.showed:
             pyplot.show()
         else:
-            pyplot.savefig("../pic/3.png", dpi = 300)
+            self.filename = datetime.today().strftime("%Y%m%d%H%M%S") + ".png"
+            pyplot.savefig("pic/" + self.filename, dpi = 300)
+        pyplot.cla()
 
     def ShowNetworkOfKeywords(self, _n_keywords):
         dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.info_abstract, _n_keywords)
@@ -143,7 +151,9 @@ class BibliometricVisualizer:
         if self.showed:
             pyplot.show()
         else:
-            pyplot.savefig("../pic/4.png", dpi = 300)
+            self.filename = datetime.today().strftime("%Y%m%d%H%M%S") + ".png"
+            pyplot.savefig("pic/" + self.filename, dpi = 300)
+        pyplot.cla()
 
     def ShowBibliometrics(self):
         list_raw = bibliometrics.get_trend_of_publication(self.info_abstract)
@@ -162,4 +172,6 @@ class BibliometricVisualizer:
         if self.showed:
             pyplot.show()
         else:
-            pyplot.savefig("../pic/5.png", dpi = 300)
+            self.filename = datetime.today().strftime("%Y%m%d%H%M%S") + ".png"
+            pyplot.savefig("pic/" + self.filename, dpi = 300)
+        pyplot.cla()

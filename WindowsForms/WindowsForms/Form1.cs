@@ -22,6 +22,9 @@ namespace WindowsForms
         Socket sock;
         byte[] buf = new byte[8192];
         ArrayList ArrayQuery = new ArrayList();
+        int start_year, end_year;
+        int len;
+        JObject jObject;
 
         public Form1()
         {
@@ -41,12 +44,12 @@ namespace WindowsForms
             //string Query = "TITLE-ABS-KEY ( \"Photovoltaic\" OR \"BIPV\" OR \"PV\" OR \"Irradiation\") AND TITLE-ABS-KEY ( \"solar\" OR \"sun\") AND TITLE-ABS-KEY ( \"machine learning\" OR \"prediction\" OR \"modeling\" ) AND ( EXCLUDE ( SUBJAREA , \"MATE\" ) OR EXCLUDE ( SUBJAREA , \"CHEM\" ) OR EXCLUDE ( SUBJAREA , \"CENG\" ) ) AND ( EXCLUDE ( SUBJAREA , \"MEDI\" ) OR EXCLUDE ( SUBJAREA , \"SOCI\" ) OR EXCLUDE ( SUBJAREA , \"AGRI\" ) OR EXCLUDE ( SUBJAREA , \"BIOC\" ) OR EXCLUDE ( SUBJAREA , \"BUSI\" ) OR EXCLUDE ( SUBJAREA , \"ECON\" ) OR EXCLUDE ( SUBJAREA , \"IMMU\" ) OR EXCLUDE ( SUBJAREA , \"NEUR\" ) OR EXCLUDE ( SUBJAREA , \"PHAR\" ) OR EXCLUDE ( SUBJAREA , \"HEAL\" ) OR EXCLUDE ( SUBJAREA , \"PSYC\" ) OR EXCLUDE ( SUBJAREA , \"ARTS\" ) OR EXCLUDE ( SUBJAREA , \"VETE\" ) OR EXCLUDE ( SUBJAREA , \"NURS\" ) OR EXCLUDE ( SUBJAREA , \"DENT\" ) OR EXCLUDE ( SUBJAREA , \"Undefined\" ) )";
             //richTextBox1.Text = Query;
 
+            Process.Start("cmd.exe", "/C src\\__entry.py false");
+
             sock = new Socket(AddressFamily.InterNetwork, SocketType.Stream, ProtocolType.Tcp);
             IPEndPoint ep = new IPEndPoint(IPAddress.Any, 2937);
             sock.Bind(ep);
             sock.Listen(10);
-
-            //Process.Start("cmd.exe", "/C ..\\..\\..\\..\\src\\entry.py");
             clientSock = sock.Accept();
         }
         ~Form1()
@@ -57,6 +60,12 @@ namespace WindowsForms
 
         private void button1_Click(object sender, EventArgs e)
         {
+            if(richTextBox1.Text.Length <= 0)
+            {
+                MessageBox.Show("Invalid query input.", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             this.groupBox2.Enabled = false;
             this.groupBox3.Enabled = false;
             this.dataGridView1.Rows.Clear();
@@ -78,15 +87,18 @@ namespace WindowsForms
             }
 
             string json = null;
-            using (System.IO.StreamReader sr = new System.IO.StreamReader("..\\..\\..\\..\\df\\resume_df.json"))
+            using (System.IO.StreamReader sr = new System.IO.StreamReader("df\\resume_df.json"))
             {
                 json = sr.ReadToEnd();
                 sr.Close();
             }
 
-            var jObject = JObject.Parse(json);
-            int start_year = Convert.ToInt32(jObject["start_year"].ToString());
-            int end_year = Convert.ToInt32(jObject["end_year"].ToString());
+            jObject = JObject.Parse(json);
+            start_year = Convert.ToInt32(jObject["start_year"].ToString());
+            end_year = Convert.ToInt32(jObject["end_year"].ToString());
+            len = Convert.ToInt32(jObject["len"].ToString());
+            label1.Text = len.ToString() + " literatures retrieved.";
+
             JToken jToken = jObject["year_frequency"];
             
             var ArrayYear = Enumerable.Range(start_year, end_year - start_year + 1).Select(x => x.ToString()).ToArray();
@@ -127,6 +139,36 @@ namespace WindowsForms
 
         private void button4_Click(object sender, EventArgs e)
         {
+            int n;
+            if(radioButton1.Checked)
+            {
+                JToken jToken = jObject["year_frequency"];
+                for (n = Convert.ToInt32(this.comboBox1.Text) - start_year; n < Convert.ToInt32(this.comboBox2.Text) - start_year; n++)
+                {
+                    if (Convert.ToInt32(jToken[n]) < 100)
+                    {
+                        var result = MessageBox.Show("A distortion can occur if the number of documents in n year is less than 100. Do you still want to proceed?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
+                        if (result == DialogResult.Yes)
+                        {
+                            break;
+                        }
+                        else if (result == DialogResult.Cancel)
+                        {
+                            return;
+                        }
+                    }
+                }
+            }
+            else
+            {
+                if(comboBox3.Text != "All")
+                {
+                    MessageBox.Show("For trend analysis by journal, the literature scope setting must be \"All\".", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+            }
+            
+
             string text = "3//";
             text += radioButton1.Checked ? "1**" : "2**";
             text += this.textBox1.Text;
@@ -137,16 +179,9 @@ namespace WindowsForms
             }
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 
-            int n = clientSock.Receive(buf);
+            n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if (data != "DONE")
-            {
-                ;
-            }
-            else
-            {
-                pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton1.Checked ? "1.png" : "2.png"));
-            }
+            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -191,14 +226,7 @@ namespace WindowsForms
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            if (data != "DONE")
-            {
-                ;
-            }
-            else
-            {
-                pictureBox1.Image = Bitmap.FromFile("..\\..\\..\\..\\pic\\" + (radioButton3.Checked ? "3.png" : "4.png"));
-            }
+            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -209,7 +237,7 @@ namespace WindowsForms
             string query = null;
             try
             {
-                using (System.IO.StreamReader sr = new System.IO.StreamReader("..\\..\\..\\..\\log\\query_scopus.txt"))
+                using (System.IO.StreamReader sr = new System.IO.StreamReader("conf\\query_scopus.txt"))
                 {
                     while ((query = sr.ReadLine()) != null)
                     {
@@ -224,7 +252,7 @@ namespace WindowsForms
             }
             catch
             {
-                using (System.IO.StreamWriter sr = new System.IO.StreamWriter("..\\..\\..\\..\\log\\query_scopus.txt"))
+                using (System.IO.StreamWriter sr = new System.IO.StreamWriter("conf\\query_scopus.txt"))
                 {
                     sr.Close();
                 }
@@ -233,7 +261,7 @@ namespace WindowsForms
 
         private void Form1_FormClosing(object sender, FormClosingEventArgs e)
         {
-            using (System.IO.StreamWriter sr = new System.IO.StreamWriter("..\\..\\..\\..\\log\\query_scopus.txt", append: false))
+            using (System.IO.StreamWriter sr = new System.IO.StreamWriter("conf\\query_scopus.txt", append: false))
             {
                 foreach(var Query in ArrayQuery)
                 {
@@ -253,6 +281,21 @@ namespace WindowsForms
             {
                 richTextBox1.Text = dataGridView3.Rows[e.RowIndex].Cells[0].Value.ToString();
             }
+        }
+
+        private void button5_Click(object sender, EventArgs e)
+        {
+            string text = "3//";
+            if(radioButton5.Checked)
+            {
+                text += "5";
+            }
+            
+            clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
+
+            int n = clientSock.Receive(buf);
+            string data = Encoding.UTF8.GetString(buf, 0, n);
+            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
         }
     }
 }

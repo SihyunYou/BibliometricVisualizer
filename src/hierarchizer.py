@@ -210,7 +210,8 @@ class Hierarchizer(Regularizer):
             "bipv/t",
             "bist",
             "bists",
-            "agrivoltaic"
+            "agrivoltaic",
+            "photovoltaics",
           ],
           "agriculture": [
             "agrivoltaic"
@@ -244,7 +245,7 @@ class Hierarchizer(Regularizer):
                     self.__search_knowledge_hierarchy(key)
 
     def tokenize(self, _abstract):
-        return word_tokenize(self.__regularize_abstract(self._Preprocessor__correct_abstract_error(_abstract)))
+        return word_tokenize(self.__regularize_abstract(self._Preprocessor__correct_abstract_error(_abstract)).lower())
 
     def is_this_keyword_hierarchical(self, _keyword):
         for key in self.__dict_knowledge_hierarchy: 

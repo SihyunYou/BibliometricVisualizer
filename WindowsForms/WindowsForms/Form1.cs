@@ -148,7 +148,7 @@ namespace WindowsForms
                     if (Convert.ToInt32(jToken[n]) < 100)
                     {
                         var result = MessageBox.Show("A distortion can occur if the number of documents in n year is less than 100. Do you still want to proceed?", "Warning", MessageBoxButtons.OKCancel, MessageBoxIcon.Warning);
-                        if (result == DialogResult.Yes)
+                        if (result == DialogResult.OK)
                         {
                             break;
                         }

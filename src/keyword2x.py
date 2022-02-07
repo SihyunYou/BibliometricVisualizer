@@ -16,12 +16,12 @@ def get_keyword_interest(_df_abstract, _interesting_keyword):
 
         if is_hierarchical:
             for j in range(1, hierarchizer.MAX_LEN_WORD_GRAPH + 1):
-                for k in range(len(list_tokenized_unigram) - j):
+                for k in range(len(list_tokenized_unigram) - j - 1):
                     if hierarchizer.is_this_keyword_interesting(' '.join(list_tokenized_unigram[k:k+j])):
                         frequency_keyword += 1
         else:
-            for j in range(1, _interesting_keyword.count(' ') + 1):
-                for k in range(len(list_tokenized_unigram) - j):
+            for j in range(1, _interesting_keyword.count(' ') + 2):
+                for k in range(len(list_tokenized_unigram) - j - 1):
                     if ' '.join(list_tokenized_unigram[k:k+j]) == _interesting_keyword:
                         frequency_keyword += 1
 

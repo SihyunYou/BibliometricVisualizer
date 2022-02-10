@@ -5,8 +5,8 @@ from abstract_reader import *
 from unigramer import Unigramer
 from tqdm.auto import tqdm
 
-def get_trend_of_keywords(_info_abstract, _n_keywords = 50):
-    unigramer = Unigramer()
+def get_trend_of_keywords(_info_abstract, _level_stopwords, _n_keywords = 50):
+    unigramer = Unigramer(_level_stopwords)
     dict_bow = {}
 
     for raw_abstract in tqdm([str(_info_abstract.df_abstract.iloc[i, 11]) for i in range(_info_abstract.df_abstract.shape[0])], desc = "BoW 생성 중(x2keywords)"):
@@ -19,10 +19,10 @@ def get_trend_of_keywords(_info_abstract, _n_keywords = 50):
 
     return top_n_dict(dict_bow, _n_keywords)
 
-def get_dict_term_fair_frequency(_info_abstract, _n_keywords = 50):
-    unigramer = Unigramer()
+def get_dict_term_fair_frequency(_info_abstract, _level_stopwords, _n_keywords = 50):
+    unigramer = Unigramer(_level_stopwords)
     dict_term_fair_frequency = {}
-    list_top_keywords = get_trend_of_keywords(_info_abstract, _n_keywords).keys()
+    list_top_keywords = get_trend_of_keywords(_info_abstract, _level_stopwords, _n_keywords).keys()
 
     for raw_abstract in tqdm([str(_info_abstract.df_abstract.iloc[i, 11]) for i in range(_info_abstract.df_abstract.shape[0])], desc = "단어쌍 빈도(TPF) 딕셔너리 구성 중"):
         list_tokenized_unigram = unigramer.tokenize(raw_abstract)

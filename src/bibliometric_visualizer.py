@@ -4,6 +4,7 @@ import numpy
 import matplotlib.pyplot as pyplot
 import matplotlib.pylab as pylab
 from datetime import datetime
+import os
 
 from abstract_reader import AbstractReader
 import keyword2x
@@ -17,6 +18,11 @@ class BibliometricVisualizer:
         self.info_abstract = _info_abstract
         self.showed = _showed
         self.filename = ''
+
+        try:
+            os.mkdir("pic")
+        except:
+            pass
 
         pyplot.style.use("default")
         pylab.rcParams.update({
@@ -93,8 +99,8 @@ class BibliometricVisualizer:
             pyplot.savefig("pic/" + self.filename, dpi = 300)
         pyplot.cla()
 
-    def ShowWordCloudOfKeywords(self, _n_keywords):
-        dict_word_count = x2keywords.get_trend_of_keywords(self.info_abstract, _n_keywords)
+    def ShowWordCloudOfKeywords(self, _level_stopwords, _n_keywords):
+        dict_word_count = x2keywords.get_trend_of_keywords(self.info_abstract, _level_stopwords, _n_keywords)
         print(dict_word_count)
 
         from wordcloud import WordCloud
@@ -110,8 +116,8 @@ class BibliometricVisualizer:
             pyplot.savefig("pic/" + self.filename, dpi = 300)
         pyplot.cla()
 
-    def ShowNetworkOfKeywords(self, _n_keywords):
-        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.info_abstract, _n_keywords)
+    def ShowNetworkOfKeywords(self, _level_stopwords, _n_keywords):
+        dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.info_abstract, _level_stopwords, _n_keywords)
 
         import networkx as nx
         import operator

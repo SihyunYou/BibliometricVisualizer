@@ -2,6 +2,7 @@
 from bibliometric_visualizer import BibliometricVisualizer
 from abstract_reader import AbstractReader
 import socket
+import traceback
 
 #Query = 'TITLE-ABS-KEY ( "Photovoltaic" OR "BIPV" OR "PV" OR "Irradiation") AND TITLE-ABS-KEY ( "solar" OR "sun") AND TITLE-ABS-KEY ( "machine learning" OR "prediction" OR "modeling" ) AND ( EXCLUDE ( SUBJAREA , "MATE" ) OR EXCLUDE ( SUBJAREA , "CHEM" ) OR EXCLUDE ( SUBJAREA , "CENG" ) ) AND ( EXCLUDE ( SUBJAREA , "MEDI" ) OR EXCLUDE ( SUBJAREA , "SOCI" ) OR EXCLUDE ( SUBJAREA , "AGRI" ) OR EXCLUDE ( SUBJAREA , "BIOC" ) OR EXCLUDE ( SUBJAREA , "BUSI" ) OR EXCLUDE ( SUBJAREA , "ECON" ) OR EXCLUDE ( SUBJAREA , "IMMU" ) OR EXCLUDE ( SUBJAREA , "NEUR" ) OR EXCLUDE ( SUBJAREA , "PHAR" ) OR EXCLUDE ( SUBJAREA , "HEAL" ) OR EXCLUDE ( SUBJAREA , "PSYC" ) OR EXCLUDE ( SUBJAREA , "ARTS" ) OR EXCLUDE ( SUBJAREA , "VETE" ) OR EXCLUDE ( SUBJAREA , "NURS" ) OR EXCLUDE ( SUBJAREA , "DENT" ) OR EXCLUDE ( SUBJAREA , "Undefined" ) )'
 
@@ -17,6 +18,9 @@ OP_DESIGNATE_LITTERATURE_RANGE = 2
 OP_ANALYSIS = 3
 
 try:
+    InfoAbstract = None
+    Visualizer = None
+
     while True:
         command = repr(client_socket.recv(1024).decode('utf-8', 'ignore')).replace("\\x00", '').strip('\'')
         print(command)
@@ -43,9 +47,9 @@ try:
             elif code_operation_detail == 2:
                 Visualizer.ShowTrendOfJournalsFromKeyword(list_parameter[1], int(list_parameter[2]), int(list_parameter[3]))
             elif code_operation_detail == 3:
-                Visualizer.ShowWordCloudOfKeywords(int(list_parameter[1]))
+                Visualizer.ShowWordCloudOfKeywords(int(list_parameter[1]), int(list_parameter[2]))
             elif code_operation_detail == 4:
-                Visualizer.ShowNetworkOfKeywords(int(list_parameter[1]))
+                Visualizer.ShowNetworkOfKeywords(int(list_parameter[1]), int(list_parameter[2]))
             elif code_operation_detail == 5:
                 Visualizer.ShowBibliometrics()
             client_socket.send(Visualizer.filename.encode())
@@ -53,6 +57,7 @@ try:
             print("Wrong operation code returned.")
 except Exception as e:
     print(e)
+    traceback.print_exc()
     import time
     time.sleep(30)
 

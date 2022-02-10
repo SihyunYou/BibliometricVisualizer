@@ -29,7 +29,7 @@ namespace WindowsForms
         /// </summary>
         private void InitializeComponent()
         {
-            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle3 = new System.Windows.Forms.DataGridViewCellStyle();
+            System.Windows.Forms.DataGridViewCellStyle dataGridViewCellStyle2 = new System.Windows.Forms.DataGridViewCellStyle();
             this.groupBox1 = new System.Windows.Forms.GroupBox();
             this.label1 = new System.Windows.Forms.Label();
             this.dataGridView3 = new System.Windows.Forms.DataGridView();
@@ -66,6 +66,8 @@ namespace WindowsForms
             this.label6 = new System.Windows.Forms.Label();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.label9 = new System.Windows.Forms.Label();
+            this.comboBox4 = new System.Windows.Forms.ComboBox();
             this.button3 = new System.Windows.Forms.Button();
             this.radioButton3 = new System.Windows.Forms.RadioButton();
             this.radioButton4 = new System.Windows.Forms.RadioButton();
@@ -76,6 +78,7 @@ namespace WindowsForms
             this.button5 = new System.Windows.Forms.Button();
             this.pictureBox1 = new System.Windows.Forms.PictureBox();
             this.groupBox4 = new System.Windows.Forms.GroupBox();
+            this.progressBar1 = new System.Windows.Forms.ProgressBar();
             this.groupBox1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView3)).BeginInit();
             this.groupBox2.SuspendLayout();
@@ -87,6 +90,7 @@ namespace WindowsForms
             this.tabPage2.SuspendLayout();
             this.tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            this.groupBox4.SuspendLayout();
             this.SuspendLayout();
             // 
             // groupBox1
@@ -131,8 +135,8 @@ namespace WindowsForms
             // 
             // Column4
             // 
-            dataGridViewCellStyle3.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-            this.Column4.DefaultCellStyle = dataGridViewCellStyle3;
+            dataGridViewCellStyle2.Font = new System.Drawing.Font("Arial", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.Column4.DefaultCellStyle = dataGridViewCellStyle2;
             this.Column4.HeaderText = "Query";
             this.Column4.Name = "Column4";
             this.Column4.Width = 455;
@@ -447,6 +451,8 @@ namespace WindowsForms
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.label9);
+            this.tabPage2.Controls.Add(this.comboBox4);
             this.tabPage2.Controls.Add(this.button3);
             this.tabPage2.Controls.Add(this.radioButton3);
             this.tabPage2.Controls.Add(this.radioButton4);
@@ -459,6 +465,29 @@ namespace WindowsForms
             this.tabPage2.TabIndex = 1;
             this.tabPage2.Text = "Analyzer relation of keywords";
             this.tabPage2.UseVisualStyleBackColor = true;
+            // 
+            // label9
+            // 
+            this.label9.AutoSize = true;
+            this.label9.Location = new System.Drawing.Point(26, 22);
+            this.label9.Name = "label9";
+            this.label9.Size = new System.Drawing.Size(94, 15);
+            this.label9.TabIndex = 15;
+            this.label9.Text = "Stopwords level";
+            this.label9.TextAlign = System.Drawing.ContentAlignment.MiddleCenter;
+            // 
+            // comboBox4
+            // 
+            this.comboBox4.FormattingEnabled = true;
+            this.comboBox4.Items.AddRange(new object[] {
+            "3(expanded)",
+            "2(frequent)",
+            "1(basic)"});
+            this.comboBox4.Location = new System.Drawing.Point(150, 19);
+            this.comboBox4.Name = "comboBox4";
+            this.comboBox4.Size = new System.Drawing.Size(97, 23);
+            this.comboBox4.TabIndex = 14;
+            this.comboBox4.Text = "3(expanded)";
             // 
             // button3
             // 
@@ -474,7 +503,7 @@ namespace WindowsForms
             // 
             this.radioButton3.AutoSize = true;
             this.radioButton3.Checked = true;
-            this.radioButton3.Location = new System.Drawing.Point(268, 23);
+            this.radioButton3.Location = new System.Drawing.Point(268, 21);
             this.radioButton3.Name = "radioButton3";
             this.radioButton3.Size = new System.Drawing.Size(176, 19);
             this.radioButton3.TabIndex = 12;
@@ -485,7 +514,7 @@ namespace WindowsForms
             // radioButton4
             // 
             this.radioButton4.AutoSize = true;
-            this.radioButton4.Location = new System.Drawing.Point(268, 44);
+            this.radioButton4.Location = new System.Drawing.Point(268, 48);
             this.radioButton4.Name = "radioButton4";
             this.radioButton4.Size = new System.Drawing.Size(190, 34);
             this.radioButton4.TabIndex = 11;
@@ -497,7 +526,7 @@ namespace WindowsForms
             // label8
             // 
             this.label8.AutoSize = true;
-            this.label8.Location = new System.Drawing.Point(13, 32);
+            this.label8.Location = new System.Drawing.Point(13, 48);
             this.label8.Name = "label8";
             this.label8.Size = new System.Drawing.Size(119, 30);
             this.label8.TabIndex = 5;
@@ -506,7 +535,7 @@ namespace WindowsForms
             // 
             // textBox4
             // 
-            this.textBox4.Location = new System.Drawing.Point(150, 38);
+            this.textBox4.Location = new System.Drawing.Point(150, 54);
             this.textBox4.Name = "textBox4";
             this.textBox4.Size = new System.Drawing.Size(97, 21);
             this.textBox4.TabIndex = 4;
@@ -557,11 +586,19 @@ namespace WindowsForms
             // 
             // groupBox4
             // 
+            this.groupBox4.Controls.Add(this.progressBar1);
             this.groupBox4.Location = new System.Drawing.Point(638, 17);
             this.groupBox4.Name = "groupBox4";
             this.groupBox4.Size = new System.Drawing.Size(1006, 699);
             this.groupBox4.TabIndex = 4;
             this.groupBox4.TabStop = false;
+            // 
+            // progressBar1
+            // 
+            this.progressBar1.Location = new System.Drawing.Point(813, 660);
+            this.progressBar1.Name = "progressBar1";
+            this.progressBar1.Size = new System.Drawing.Size(100, 23);
+            this.progressBar1.TabIndex = 5;
             // 
             // Form1
             // 
@@ -596,6 +633,7 @@ namespace WindowsForms
             this.tabPage3.ResumeLayout(false);
             this.tabPage3.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            this.groupBox4.ResumeLayout(false);
             this.ResumeLayout(false);
 
         }
@@ -648,6 +686,9 @@ namespace WindowsForms
         private System.Windows.Forms.TabPage tabPage3;
         private System.Windows.Forms.RadioButton radioButton5;
         private System.Windows.Forms.Button button5;
+        private System.Windows.Forms.Label label9;
+        private System.Windows.Forms.ComboBox comboBox4;
+        private System.Windows.Forms.ProgressBar progressBar1;
     }
 }
 

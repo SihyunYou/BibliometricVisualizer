@@ -221,6 +221,7 @@ namespace WindowsForms
         {
             string text = "3//";
             text += radioButton3.Checked ? "3**" : "4**";
+            text += comboBox4.Text[0] + "**";
             text += this.textBox4.Text;
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 

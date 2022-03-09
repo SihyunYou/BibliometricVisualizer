@@ -6,18 +6,18 @@ import traceback
 
 #Query = 'TITLE-ABS-KEY ( "Photovoltaic" OR "BIPV" OR "PV" OR "Irradiation") AND TITLE-ABS-KEY ( "solar" OR "sun") AND TITLE-ABS-KEY ( "machine learning" OR "prediction" OR "modeling" ) AND ( EXCLUDE ( SUBJAREA , "MATE" ) OR EXCLUDE ( SUBJAREA , "CHEM" ) OR EXCLUDE ( SUBJAREA , "CENG" ) ) AND ( EXCLUDE ( SUBJAREA , "MEDI" ) OR EXCLUDE ( SUBJAREA , "SOCI" ) OR EXCLUDE ( SUBJAREA , "AGRI" ) OR EXCLUDE ( SUBJAREA , "BIOC" ) OR EXCLUDE ( SUBJAREA , "BUSI" ) OR EXCLUDE ( SUBJAREA , "ECON" ) OR EXCLUDE ( SUBJAREA , "IMMU" ) OR EXCLUDE ( SUBJAREA , "NEUR" ) OR EXCLUDE ( SUBJAREA , "PHAR" ) OR EXCLUDE ( SUBJAREA , "HEAL" ) OR EXCLUDE ( SUBJAREA , "PSYC" ) OR EXCLUDE ( SUBJAREA , "ARTS" ) OR EXCLUDE ( SUBJAREA , "VETE" ) OR EXCLUDE ( SUBJAREA , "NURS" ) OR EXCLUDE ( SUBJAREA , "DENT" ) OR EXCLUDE ( SUBJAREA , "Undefined" ) )'
 
-HOST = '127.0.0.1'  
-PORT = 2937    
-client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-client_socket.connect((HOST, PORT))
-print(client_socket)
-print("Connection succeeded.")
-
-OP_ENTER_QUERY = 1
-OP_DESIGNATE_LITTERATURE_RANGE = 2
-OP_ANALYSIS = 3
-
 try:
+    HOST = '127.0.0.1'  
+    PORT = 2937    
+    client_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    client_socket.connect((HOST, PORT))
+    print(client_socket)
+    print("Connection succeeded.")
+
+    OP_ENTER_QUERY = 1
+    OP_DESIGNATE_LITTERATURE_RANGE = 2
+    OP_ANALYSIS = 3
+
     InfoAbstract = None
     Visualizer = None
 
@@ -59,7 +59,7 @@ except Exception as e:
     print(e)
     traceback.print_exc()
     import time
-    time.sleep(30)
+    time.sleep(300)
 
 client_socket.close()
 exit(1)

@@ -244,8 +244,11 @@ namespace WindowsForms
                     {
                         if(!ArrayQuery.Contains(query))
                         {
-                            dataGridView3.Rows.Add(query);
-                            ArrayQuery.Add(query);
+                            if(query != "")
+                            {
+                                ArrayQuery.Add(query);
+                                dataGridView3.Rows.Add(query);
+                            }
                         }
                     }
                     sr.Close();
@@ -266,7 +269,10 @@ namespace WindowsForms
             {
                 foreach(var Query in ArrayQuery)
                 {
-                    sr.WriteLine(Query);
+                    if(Query != "")
+                    {
+                        sr.WriteLine(Query);
+                    }
                 }
             }
         }

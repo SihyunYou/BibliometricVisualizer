@@ -4,21 +4,15 @@ from tqdm import tqdm
 import pandas as pd
 import numpy as np
 import calendar
-
-#(TITLE-ABS-KEY("Bayesian")
-#AND NOT TITLE-ABS-KEY("Bayesian Network")
-#AND NOT TITLE-ABS-KEY("Bayesian Information Criterion"))
-#AND DOCTYPE(ar)
-#AND SUBJAREA(MULT OR ARTS OR BUSI OR DECI OR ECON OR PSYC OR SOCI)
-#AND PUBYEAR > 1997 AND PUBYEAR < 2014
-#AND ( LIMIT-TO(SUBJAREA,"PSYC" ) )
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning) 
 
 class ScopusReader:
     def __init__(self, _query):
         self.query = _query
 
     def retrieve(self):
-        df_abstract_retrieved = pd.DataFrame(ScopusSearch(self.query).results)
+        df_abstract_retrieved = pd.DataFrame(ScopusSearch(self.query, download=True, verbose=True).results)
         columns=["eid", "PT", "AU", "AF", "TI", 
                     "SO", "SO_abb", "LA", "DT", "DE", 
                     "ID", "AB", "C1", "RP", "EM", 
@@ -209,7 +203,8 @@ class ScopusReader:
                                         j9_, ji_, pd_, py_, vl_, 
                                         ar_, doi_, sc_]
     
-            self.df_ab = self.df_ab.append(dict(zip(columns, data)), ignore_index=True)
+            df_ab_tmp = pd.DataFrame(dict(zip(columns, [[d] for d in data])))
+            self.df_ab = pd.concat([self.df_ab, df_ab_tmp], axis=0)
 
     def get_hashed_filename(self):
         import hashlib
@@ -219,4 +214,4 @@ class ScopusReader:
         return self.df_ab
 
     def save_df_abstract(self):
-        self.df_ab.to_pickle("../df/" + self.get_hashed_filename())
+        self.df_ab.to_pickle("df/" + self.get_hashed_filename())

@@ -46,15 +46,15 @@ class AbstractReader:
 
             self.df_abstract = pandas.DataFrame(columns = df_raw_abstract.columns)
             for i in tqdm(range(df_raw_abstract.shape[0]), desc = "데이터프레임 추출 중"):
-                list_article_issn = str(df_raw_abstract["SN"][i]).split(' ')
+                list_article_issn = str(df_raw_abstract["SN"].iloc[i]).split(' ')
                 for article_issn in list_article_issn:
                     if article_issn in list_good_journal_issn:
-                        self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.loc[i]
+                        self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.iloc[i]
         else:
             self.df_abstract = pandas.DataFrame(columns = df_raw_abstract.columns)
             for i in tqdm(range(df_raw_abstract.shape[0]), desc = "데이터프레임 추출 중"):
-                if 'None' != str(df_raw_abstract["SN"][i]):
-                    self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.loc[i]
+                if 'None' != str(df_raw_abstract["SN"].iloc[i]):
+                    self.df_abstract.loc[len(self.df_abstract)] = df_raw_abstract.iloc[i]
 
         self.__print_dataframe(self.df_abstract)
         resume_df = OrderedDict()
@@ -63,6 +63,7 @@ class AbstractReader:
         resume_df["start_year"] = start_year
         end_year = self.df_abstract["PY"].values.tolist()[0]
         resume_df["end_year"] = end_year
+        print(self.df_abstract["PY"])
         resume_df["year_frequency"] = [self.df_abstract["PY"].loc[self.df_abstract["PY"] == str(n)].shape[0] for n in range(int(start_year), int(end_year) + 1)]
 
         dict_journal_frequency = dict(zip(
@@ -90,3 +91,6 @@ class AbstractReader:
                 (self.df_abstract["PY"].astype(int) <= _range_year[1])]
         if _publication_name != 'All':
             self.df_abstract = self.df_abstract.loc[self.df_abstract["SO"].isin(_publication_name.split(';'))]
+
+
+#s = AbstractReader('TITLE-ABS-KEY ( "Photovoltaic" OR "PV" OR "Irradiation" OR "radiation") AND TITLE-ABS-KEY ( "solar" OR "sun") AND TITLE-ABS-KEY ( "building" OR "BIPV" OR "BAPV") AND TITLE-ABS-KEY ( "machine learning" OR "prediction" OR "modeling" ) AND ( EXCLUDE ( SUBJAREA , "MATE" ) OR EXCLUDE ( SUBJAREA , "CHEM" ) OR EXCLUDE ( SUBJAREA , "CENG" ) ) AND ( EXCLUDE ( SUBJAREA , "MEDI" ) OR EXCLUDE ( SUBJAREA , "SOCI" ) OR EXCLUDE ( SUBJAREA , "AGRI" ) OR EXCLUDE ( SUBJAREA , "BIOC" ) OR EXCLUDE ( SUBJAREA , "BUSI" ) OR EXCLUDE ( SUBJAREA , "ECON" ) OR EXCLUDE ( SUBJAREA , "IMMU" ) OR EXCLUDE ( SUBJAREA , "NEUR" ) OR EXCLUDE ( SUBJAREA , "PHAR" ) OR EXCLUDE ( SUBJAREA , "HEAL" ) OR EXCLUDE ( SUBJAREA , "PSYC" ) OR EXCLUDE ( SUBJAREA , "ARTS" ) OR EXCLUDE ( SUBJAREA , "VETE" ) OR EXCLUDE ( SUBJAREA , "NURS" ) OR EXCLUDE ( SUBJAREA , "DENT" ) OR EXCLUDE ( SUBJAREA , "Undefined" ) )')

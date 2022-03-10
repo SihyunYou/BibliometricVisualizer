@@ -58,13 +58,13 @@ class BibliometricVisualizer:
         ax.cla()
         ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword from ' + str(self.info_abstract.range_year[0]) + ' to ' + str(self.info_abstract.range_year[1]), y = self.width_title)
         ax.bar(numpy.arange(n_xticks), 
-              [y[1] * 100 for y in list_raw], 
+              [y[1][0] * 100 for y in list_raw], 
               width = 0.5, 
               color = self.get_palette_list([0x00, 0x66, 0x00], [0xCC, 0xFF, 0xCC], n_xticks), 
               label = "Proportion that the keyword occupies in n year")
         ax.legend(loc='upper right')   
         ax.set_xticks(numpy.arange(n_xticks), [x[0] for x in list_raw])
-        ax.set_ylim(min([y[1] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1] for y in list_raw]) * (1 + self.bar_size) * 100)
+        ax.set_ylim(min([y[1][0] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1][0] for y in list_raw]) * (1 + self.bar_size) * 100)
         ax.set_yticklabels(['{:,.2%}'.format(x / 100) for x in ax.get_yticks()])
 
         if self.showed:
@@ -83,13 +83,13 @@ class BibliometricVisualizer:
         ax.cla()
         ax.set_title('Trend of \'' + str(_your_keyword) + '\' keyword in top ' + str(_n_journals) + ' journals', y = self.width_title)
         ax.bar(numpy.arange(n_xticks), 
-              [x[1] * 100 for x in list_raw],
+              [x[1][0] * 100 for x in list_raw],
               width = 0.5,
               color = self.get_palette_list([0xCC, 0xFF, 0xCC], [0x00, 0x66, 0x00], _n_journals), 
               label = "Proportion that the keyword occupies in the journal")
         ax.legend(loc='upper right')   
         ax.set_xticks(numpy.arange(n_xticks), [x[0].replace(' ', '\n') for x in list_raw])
-        ax.set_ylim(min([y[1] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1] for y in list_raw]) * (1 + self.bar_size) * 100)
+        ax.set_ylim(min([y[1][0] for y in list_raw]) * (1 - self.bar_size) * 100, max([y[1][0] for y in list_raw]) * (1 + self.bar_size) * 100)
         ax.set_yticklabels(['{:,.2%}'.format(x / 100) for x in ax.get_yticks()])
         
         if self.showed:

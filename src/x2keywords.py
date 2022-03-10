@@ -4,6 +4,8 @@
 from abstract_reader import *
 from unigramer import Unigramer
 from tqdm.auto import tqdm
+from datetime import datetime
+import os
 
 def get_trend_of_keywords(_info_abstract, _level_stopwords, _n_keywords = 50):
     unigramer = Unigramer(_level_stopwords)

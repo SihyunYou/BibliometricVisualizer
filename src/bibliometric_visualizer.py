@@ -118,6 +118,7 @@ class BibliometricVisualizer:
 
     def ShowNetworkOfKeywords(self, _level_stopwords, _n_keywords):
         dict_term_fair_frequency = x2keywords.get_dict_term_fair_frequency(self.info_abstract, _level_stopwords, _n_keywords)
+        print(dict_term_fair_frequency)
 
         import networkx as nx
         import operator

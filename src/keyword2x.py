@@ -39,16 +39,16 @@ def get_trend_of_years_from_keyword(_info_abstract, _your_keyword):
         os.mkdir("report")
     except:
         pass
-    with open("report/" + "analysis_k2x_year_" + datetime.today().strftime("%Y%m%d%H%M%S") + ".csv", 'w') as f:
+    with open("report/" + "analysis_k2x_year_" + datetime.today().strftime("%Y%m%d%H%M%S") + ".csv", 'w', encoding='utf8') as f:
         list_proportion = [list_raw[n][1] for n in range(len(list_raw))]
         list_rank = [len(list_proportion) - sorted(list_proportion).index(x) for x in list_proportion]
         for i, t in enumerate(list_raw):
             f.write(str(t[0]))
-            f.write(',')
-            f.write(','.join([str(k) for k in t[1]]))
-            f.write(',')
+            f.write('|')
+            f.write('|'.join([str(k) for k in t[1]]))
+            f.write('|')
             f.write(str(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["PY"] == str(t[0])].shape[0]))
-            f.write(',')
+            f.write('|')
             f.write(str(list_rank[i]))
             f.write('\n')
 
@@ -64,16 +64,16 @@ def get_trend_of_journals_from_keyword(_info_abstract, _your_keyword, _n_journal
         os.mkdir("report")
     except:
         pass
-    with open("report/" + "analysis_k2x_journal_" + datetime.today().strftime("%Y%m%d%H%M%S") + ".csv", 'w') as f:
+    with open("report/" + "analysis_k2x_journal_" + datetime.today().strftime("%Y%m%d%H%M%S") + ".csv", 'w', encoding='utf8') as f:
         list_proportion = [list_raw[n][1] for n in range(len(list_raw))]
         list_rank = [len(list_proportion) - sorted(list_proportion).index(x) for x in list_proportion]
         for i, t in enumerate(list_raw):
             f.write(str(t[0]))
-            f.write(',')
-            f.write(','.join([str(k) for k in t[1]]))
-            f.write(',')
+            f.write('|')
+            f.write('|'.join([str(k) for k in t[1]]))
+            f.write('|')
             f.write(str(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["SO"] == str(t[0])].shape[0]))
-            f.write(',')
+            f.write('|')
             f.write(str(list_rank[i]))
             f.write('\n')
 

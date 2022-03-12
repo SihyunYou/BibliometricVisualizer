@@ -13,11 +13,14 @@ using System.Diagnostics;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections;
+using System.IO;
 
 namespace WindowsForms
 {
     public partial class Form1 : Form
     {
+        string CurrentDatagridviewPic;
+        string CurrentDatagridviewCsv;
         Socket clientSock;
         Socket sock;
         byte[] buf = new byte[8192];
@@ -137,10 +140,18 @@ namespace WindowsForms
             this.groupBox3.Enabled = true;
         }
 
+        public static FileInfo GetNewestFile(DirectoryInfo directory)
+        {
+            return directory.GetFiles()
+                .Union(directory.GetDirectories().Select(d => GetNewestFile(d)))
+                .OrderByDescending(f => (f == null ? DateTime.MinValue : f.LastWriteTime))
+                .FirstOrDefault();
+        }
+
         private void button4_Click(object sender, EventArgs e)
         {
             int n;
-            if(radioButton1.Checked)
+            if (radioButton1.Checked)
             {
                 JToken jToken = jObject["year_frequency"];
                 for (n = Convert.ToInt32(this.comboBox1.Text) - start_year; n < Convert.ToInt32(this.comboBox2.Text) - start_year; n++)
@@ -161,19 +172,19 @@ namespace WindowsForms
             }
             else
             {
-                if(comboBox3.Text != "All")
+                if (comboBox3.Text != "All")
                 {
                     MessageBox.Show("For trend analysis by journal, the literature scope setting must be \"All\".", "Warning", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
             }
-            
+
 
             string text = "3//";
             text += radioButton1.Checked ? "1**" : "2**";
             text += this.textBox1.Text;
 
-            if(radioButton2.Checked)
+            if (radioButton2.Checked)
             {
                 text += "**" + this.textBox2.Text + "**" + this.textBox3.Text;
             }
@@ -181,7 +192,41 @@ namespace WindowsForms
 
             n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
+
+            label10.Visible = false;
+            CurrentDatagridviewPic = "pic\\" + GetNewestFile(new DirectoryInfo("pic")).Name;
+            CurrentDatagridviewCsv = "report\\" + GetNewestFile(new DirectoryInfo("report")).Name;
+            pictureBox1.Image = Bitmap.FromFile(CurrentDatagridviewPic);
+            string[] Lines = File.ReadAllLines(CurrentDatagridviewCsv);
+
+            dataGridView4.Rows.Clear();
+
+            if(radioButton1.Checked)
+            {
+                string[] Names = { "Year", "Proportion", "Keyword frequency", "Total frequency", "Number of publications", "Rank" };
+                for (int i = 0; i < Names.Length; i++)
+                {
+                    dataGridView4.Columns[i].Visible = true;
+                    dataGridView4.Columns[i].HeaderText = Names[i];
+                }
+                foreach (var Line in Lines)
+                {
+                    dataGridView4.Rows.Add(Line.Split('|'));
+                }
+            }
+            else if(radioButton2.Checked)
+            {
+                string[] Names = { "Journal", "Proportion", "Keyword frequency", "Total frequency", "Number of publications", "Rank" };
+                for (int i = 0; i < Names.Length; i++)
+                {
+                    dataGridView4.Columns[i].Visible = true;
+                    dataGridView4.Columns[i].HeaderText = Names[i];
+                }
+                foreach (var Line in Lines)
+                {
+                    dataGridView4.Rows.Add(Line.Split('|'));
+                }
+            }
         }
 
         private void radioButton1_CheckedChanged(object sender, EventArgs e)
@@ -227,7 +272,48 @@ namespace WindowsForms
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
-            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
+            label10.Visible = false;
+            CurrentDatagridviewPic = "pic\\" + GetNewestFile(new DirectoryInfo("pic")).Name;
+            CurrentDatagridviewCsv = "report\\" + GetNewestFile(new DirectoryInfo("report")).Name;
+            pictureBox1.Image = Bitmap.FromFile(CurrentDatagridviewPic);
+            string[] Lines = File.ReadAllLines(CurrentDatagridviewCsv);
+
+            dataGridView4.Rows.Clear();
+
+            if (radioButton3.Checked)
+            {
+                string[] Names = { "Word", "Frequency" };
+                for (int i = 0; i < Names.Length; i++)
+                {
+                    dataGridView4.Columns[i].Visible = true;
+                    dataGridView4.Columns[i].HeaderText = Names[i];
+                }
+                for(int i = Names.Length; i < dataGridView4.Columns.Count; i++)
+                {
+                    dataGridView4.Columns[i].Visible = false;
+                }
+                foreach (var Line in Lines)
+                {
+                    dataGridView4.Rows.Add(Line.Split('|'));
+                }
+            }
+            else if (radioButton4.Checked)
+            {
+                string[] Names = { "First word", "Second word", "Co-occurrence frequency" };
+                for (int i = 0; i < Names.Length; i++)
+                {
+                    dataGridView4.Columns[i].Visible = true;
+                    dataGridView4.Columns[i].HeaderText = Names[i];
+                }
+                for (int i = Names.Length; i < dataGridView4.Columns.Count; i++)
+                {
+                    dataGridView4.Columns[i].Visible = false;
+                }
+                foreach (var Line in Lines)
+                {
+                    dataGridView4.Rows.Add(Line.Split('|'));
+                }
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -290,6 +376,19 @@ namespace WindowsForms
             }
         }
 
+        private void button6_Click(object sender, EventArgs e)
+        {
+            SaveFileDialog Dialog = new SaveFileDialog();
+            Dialog.Title = "Save CSV File";
+            Dialog.DefaultExt = "csv";
+            Dialog.Filter = "*.csv";
+            Dialog.FileName = "Analysis.csv";
+            if(Dialog.ShowDialog() == DialogResult.OK)
+            {
+                File.Copy(CurrentDatagridviewCsv, Dialog.FileName, true);
+            }
+        }
+
         private void button5_Click(object sender, EventArgs e)
         {
             string text = "3//";
@@ -302,6 +401,7 @@ namespace WindowsForms
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
+            label10.Visible = false;
             pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
         }
     }

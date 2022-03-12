@@ -1,6 +1,7 @@
 vieil/
 __pycache__/
 pic/
+report/
 *.exe
 *.exe.config
 *.pdb

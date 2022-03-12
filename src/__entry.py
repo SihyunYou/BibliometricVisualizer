@@ -52,7 +52,7 @@ try:
                 Visualizer.ShowNetworkOfKeywords(int(list_parameter[1]), int(list_parameter[2]))
             elif code_operation_detail == 5:
                 Visualizer.ShowBibliometrics()
-            client_socket.send(Visualizer.filename.encode())
+            client_socket.send("DONE".encode())
         else:
             print("Wrong operation code returned.")
 except Exception as e:

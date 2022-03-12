@@ -34,7 +34,8 @@ class AbstractReader:
         try:
             with open(FILENAME_DATAFRAME + hashed_filename, 'rb') as f:
                 df_raw_abstract = pickle.load(f)
-        except:
+        except Exception as e:
+            print(e)
             scopus_reader.retrieve()
             df_raw_abstract = scopus_reader.get_df_abstract()
             scopus_reader.save_df_abstract()

@@ -32,7 +32,8 @@ class Unigramer(Regularizer):
         try:
             with open("corpus_redirection.pickle","rb") as pf:
                 self.dict_corpus_redirection = pickle.load(pf)
-        except:
+        except Exception as e:
+            print(e)
             print("corpus_redirection does not exist.")
             self.dict_corpus_redirection = {}
 

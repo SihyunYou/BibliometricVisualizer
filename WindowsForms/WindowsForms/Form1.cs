@@ -378,14 +378,58 @@ namespace WindowsForms
 
         private void button6_Click(object sender, EventArgs e)
         {
+            
+        }
+
+        private void button7_Click(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void dataGridView4_CellContentClick(object sender, DataGridViewCellEventArgs e)
+        {
+
+        }
+
+        private void button7_Click_1(object sender, EventArgs e)
+        {
             SaveFileDialog Dialog = new SaveFileDialog();
-            Dialog.Title = "Save CSV File";
-            Dialog.DefaultExt = "csv";
-            Dialog.Filter = "*.csv";
-            Dialog.FileName = "Analysis.csv";
-            if(Dialog.ShowDialog() == DialogResult.OK)
+            Dialog.Title = "Save PNG File";
+            Dialog.DefaultExt = "png";
+            Dialog.FileName = "Figure.png";
+            if (Dialog.ShowDialog() == DialogResult.OK)
             {
-                File.Copy(CurrentDatagridviewCsv, Dialog.FileName, true);
+                File.Copy(CurrentDatagridviewPic, Dialog.FileName, true);
+            }
+        }
+
+        private void button6_Click_1(object sender, EventArgs e)
+        {
+            
+        }
+
+        private void button7_Click_2(object sender, EventArgs e)
+        {
+            SaveFileDialog Dialog = new SaveFileDialog();
+            Dialog.Title = "Save file";
+            switch(tabControl2.SelectedIndex)
+            {
+                case 0:
+                    Dialog.DefaultExt = "png";
+                    Dialog.FileName = "Figure.png";
+                    if (Dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.Copy(CurrentDatagridviewPic, Dialog.FileName, true);
+                    }
+                    break;
+                case 1:
+                    Dialog.DefaultExt = "csv";
+                    Dialog.FileName = "Analysis.csv";
+                    if (Dialog.ShowDialog() == DialogResult.OK)
+                    {
+                        File.Copy(CurrentDatagridviewCsv, Dialog.FileName, true);
+                    }
+                    break;
             }
         }
 
@@ -396,13 +440,17 @@ namespace WindowsForms
             {
                 text += "5";
             }
-            
+
             clientSock.Send(Encoding.UTF8.GetBytes(text), 0, text.Length, SocketFlags.None);
 
             int n = clientSock.Receive(buf);
             string data = Encoding.UTF8.GetString(buf, 0, n);
+
             label10.Visible = false;
-            pictureBox1.Image = Bitmap.FromFile("pic\\" + data);
+            CurrentDatagridviewPic = "pic\\" + GetNewestFile(new DirectoryInfo("pic")).Name;
+            CurrentDatagridviewCsv = "report\\" + GetNewestFile(new DirectoryInfo("report")).Name;
+            pictureBox1.Image = Bitmap.FromFile(CurrentDatagridviewPic);
+            string[] Lines = File.ReadAllLines(CurrentDatagridviewCsv);
         }
     }
 }

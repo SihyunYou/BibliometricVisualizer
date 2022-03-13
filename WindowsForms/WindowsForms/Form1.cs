@@ -14,6 +14,7 @@ using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.Collections;
 using System.IO;
+using System.Text.RegularExpressions;
 
 namespace WindowsForms
 {
@@ -211,7 +212,12 @@ namespace WindowsForms
                 }
                 foreach (var Line in Lines)
                 {
-                    dataGridView4.Rows.Add(Line.Split('|'));
+                    string[] Token = Regex.Split(Line, "\",");
+                    for(int j = 0; j < Token.Length; j++)
+                    {
+                        Token[j] = Token[j].Replace("\"", "");
+                    }
+                    dataGridView4.Rows.Add(Token);
                 }
             }
             else if(radioButton2.Checked)
@@ -224,7 +230,12 @@ namespace WindowsForms
                 }
                 foreach (var Line in Lines)
                 {
-                    dataGridView4.Rows.Add(Line.Split('|'));
+                    string[] Token = Regex.Split(Line, "\",");
+                    for (int j = 0; j < Token.Length; j++)
+                    {
+                        Token[j] = Token[j].Replace("\"", "");
+                    }
+                    dataGridView4.Rows.Add(Token);
                 }
             }
         }
@@ -294,7 +305,12 @@ namespace WindowsForms
                 }
                 foreach (var Line in Lines)
                 {
-                    dataGridView4.Rows.Add(Line.Split('|'));
+                    string[] Token = Regex.Split(Line, "\",");
+                    for (int j = 0; j < Token.Length; j++)
+                    {
+                        Token[j] = Token[j].Replace("\"", "");
+                    }
+                    dataGridView4.Rows.Add(Token);
                 }
             }
             else if (radioButton4.Checked)
@@ -311,7 +327,12 @@ namespace WindowsForms
                 }
                 foreach (var Line in Lines)
                 {
-                    dataGridView4.Rows.Add(Line.Split('|'));
+                    string[] Token = Regex.Split(Line, "\",");
+                    for (int j = 0; j < Token.Length; j++)
+                    {
+                        Token[j] = Token[j].Replace("\"", "");
+                    }
+                    dataGridView4.Rows.Add(Token);
                 }
             }
         }

@@ -28,7 +28,7 @@ def get_trend_of_keywords(_info_abstract, _level_stopwords, _n_keywords = 50):
         list_bow = list(zip(dict_bow.keys(), dict_bow.values()))
         list_bow = sorted(list_bow, key = lambda x: x[1], reverse = True)
         for t in list_bow:
-            f.write(str(t[0]) + '|' + str(t[1]))
+            f.write('"' + str(t[0]) + '","' + str(t[1]) + '"')
             f.write('\n')
     
     return top_n_dict(dict_bow, _n_keywords)
@@ -62,9 +62,10 @@ def get_dict_term_fair_frequency(_info_abstract, _level_stopwords, _n_keywords =
         list_bow = list(zip(dict_term_fair_frequency.keys(), dict_term_fair_frequency.values()))
         list_bow = sorted(list_bow, key = lambda x: x[1], reverse = True)
         for t in list_bow:
-            f.write('|'.join(str(t[0]).split('**')))
-            f.write('|')
+            f.write('"');
+            f.write('","'.join(str(t[0]).split('**')))
+            f.write('","');
             f.write(str(t[1]))
-            f.write('\n')
+            f.write('"\n')
 
     return dict_term_fair_frequency

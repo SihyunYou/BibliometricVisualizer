@@ -43,14 +43,15 @@ def get_trend_of_years_from_keyword(_info_abstract, _your_keyword):
         list_proportion = [list_raw[n][1] for n in range(len(list_raw))]
         list_rank = [len(list_proportion) - sorted(list_proportion).index(x) for x in list_proportion]
         for i, t in enumerate(list_raw):
+            f.write('"')
             f.write(str(t[0]))
-            f.write('|')
-            f.write('|'.join([str(k) for k in t[1]]))
-            f.write('|')
+            f.write('","')
+            f.write('","'.join([str(k) for k in t[1]]))
+            f.write('","')
             f.write(str(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["PY"] == str(t[0])].shape[0]))
-            f.write('|')
+            f.write('","')
             f.write(str(list_rank[i]))
-            f.write('\n')
+            f.write('"\n')
 
     return list_raw
 
@@ -68,14 +69,13 @@ def get_trend_of_journals_from_keyword(_info_abstract, _your_keyword, _n_journal
         list_proportion = [list_raw[n][1] for n in range(len(list_raw))]
         list_rank = [len(list_proportion) - sorted(list_proportion).index(x) for x in list_proportion]
         for i, t in enumerate(list_raw):
-            f.write(str(t[0]))
-            f.write('|')
-            f.write('|'.join([str(k) for k in t[1]]))
-            f.write('|')
+            f.write('"' + str(t[0]) + '","')
+            f.write('","'.join([str(k) for k in t[1]]))
+            f.write('","')
             f.write(str(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["SO"] == str(t[0])].shape[0]))
-            f.write('|')
+            f.write('","')
             f.write(str(list_rank[i]))
-            f.write('\n')
+            f.write('"\n')
 
     return sorted([(journal, 
                     get_keyword_interest(_info_abstract.df_abstract.loc[_info_abstract.df_abstract["SO"] == journal], _your_keyword)) \
